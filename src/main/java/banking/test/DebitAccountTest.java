@@ -92,4 +92,17 @@ class DebitAccountTest {
             new DebitAccount("111", "Test", -100);
         });
     }
+
+    @Test
+    void testToStringOutput() {
+        DebitAccount account = new DebitAccount("001", "Ivan", 10000.0);
+        String expected = "DebitAccount{\n" +
+                " number='001',\n" +
+                " owner='Ivan',\n" +
+                " balance=10000.0\n" +
+                "}";
+
+        String actual = account.toString();
+        assertEquals(expected, actual);
+    }
 }

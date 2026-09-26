@@ -42,4 +42,13 @@ public abstract class BankAccount {
     protected boolean isValidAmount(double amount) {
         return amount > 0;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{\n" +
+                " number='" + number + "',\n" +
+                " owner='" + owner + "',\n" +
+                " balance=" + balance + "\n" +
+                "}";
+    }
 }

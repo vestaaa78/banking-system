@@ -28,5 +28,15 @@ public class CreditAccount extends BankAccount {
     public double getCreditLimit() {
         return creditLimit;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{\n" +
+                " number='" + getNumber() + "',\n" +
+                " owner='" + getOwner() + "',\n" +
+                " balance=" + getBalance() + ",\n" +
+                " creditLimit=" + creditLimit + "\n" +
+                "}";
+    }
 }
 

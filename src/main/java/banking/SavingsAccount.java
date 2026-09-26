@@ -23,4 +23,14 @@ public class SavingsAccount extends BankAccount {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{\n" +
+                " number='" + getNumber() + "',\n" +
+                " owner='" + getOwner() + "',\n" +
+                " balance=" + getBalance() + ",\n" +
+                " minimumBalance=" + minimumBalance + "\n" +
+                "}";
+    }
 }
