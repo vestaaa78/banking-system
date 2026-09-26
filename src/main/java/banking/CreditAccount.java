@@ -4,7 +4,7 @@ public class CreditAccount extends BankAccount {
 
     private final double creditLimit;
 
-    public CreditAccount(String number, String owner, double initialBalance, double creditLimit) {
+    public CreditAccount(AccountNumber number, String owner, double initialBalance, double creditLimit) {
         super(number, owner, initialBalance);
         if (creditLimit <= 0) {
             throw new IllegalArgumentException("Кредитный лимит должен быть положительным");

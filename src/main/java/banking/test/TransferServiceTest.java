@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransferServiceTest {
+    private static final AccountNumber NUMBER_A = new AccountNumber("1234567890");
+    private static final AccountNumber NUMBER_B = new AccountNumber("0987654321");
 
     @Test
     void shouldTransferSuccessfully() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 10000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, 3000);
@@ -21,8 +23,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferWhenInsufficientFunds() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 1000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, 3000);
@@ -34,8 +36,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferZeroAmount() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 1000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, 0);
@@ -47,8 +49,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferNegativeAmount() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 1000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, -500);
@@ -61,7 +63,7 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferToSameAccount() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 1000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountA, 500);
@@ -72,8 +74,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferBetweenDifferentAccountTypes() {
-        DebitAccount debitAccount = new DebitAccount("111", "Alice", 10000);
-        SavingsAccount savingsAccount = new SavingsAccount("222", "Bob", 2000, 1000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_A, "Alice", 10000);
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_B, "Bob", 2000, 1000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(debitAccount, savingsAccount, 1500);
@@ -85,8 +87,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferFromSavingsBelowMinimum() {
-        SavingsAccount savingsAccount = new SavingsAccount("111", "Alice", 2000, 1000);
-        DebitAccount debitAccount = new DebitAccount("222", "Bob", 5000);
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(savingsAccount, debitAccount, 1500);
@@ -98,8 +100,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferFromCreditAccount() {
-        CreditAccount creditAccount = new CreditAccount("111", "Alice", 1000, 5000);
-        DebitAccount debitAccount = new DebitAccount("222", "Bob", 2000);
+        CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(creditAccount, debitAccount, 4000);
@@ -111,8 +113,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferFromSavingsToDebit() {
-        SavingsAccount savingsAccount = new SavingsAccount("111", "Alice", 10000, 1000);
-        DebitAccount debitAccount = new DebitAccount("222", "Bob", 2000);
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 10000, 1000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(savingsAccount, debitAccount, 5000);
@@ -124,8 +126,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferFromSavingsToDebitWhenBelowMinimum() {
-        SavingsAccount savingsAccount = new SavingsAccount("111", "Alice", 2000, 1000);
-        DebitAccount debitAccount = new DebitAccount("222", "Bob", 5000);
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(savingsAccount, debitAccount, 1500);
@@ -137,8 +139,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferFromCreditToSavings() {
-        CreditAccount creditAccount = new CreditAccount("111", "Alice", 1000, 5000);
-        SavingsAccount savingsAccount = new SavingsAccount("222", "Bob", 2000, 1000);
+        CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_B, "Bob", 2000, 1000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(creditAccount, savingsAccount, 3000);
@@ -150,8 +152,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferBetweenTwoSavingsAccounts() {
-        SavingsAccount sender = new SavingsAccount("111", "Alice", 10000, 1000);
-        SavingsAccount receiver = new SavingsAccount("222", "Bob", 5000, 500);
+        SavingsAccount sender = new SavingsAccount(NUMBER_A, "Alice", 10000, 1000);
+        SavingsAccount receiver = new SavingsAccount(NUMBER_B, "Bob", 5000, 500);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(sender, receiver, 4000);
@@ -163,8 +165,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferBetweenTwoCreditAccounts() {
-        CreditAccount sender = new CreditAccount("111", "Alice", 1000, 5000);
-        CreditAccount receiver = new CreditAccount("222", "Bob", -2000, 3000);
+        CreditAccount sender = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
+        CreditAccount receiver = new CreditAccount(NUMBER_B, "Bob", -2000, 3000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
         boolean result = service.transfer(sender, receiver, 2000);
@@ -176,8 +178,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferWithPercentCommission() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 11000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 11000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, 10000);
@@ -189,8 +191,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotTransferWhenCannotPayCommission() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 10050);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10050);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
 
         boolean result = service.transfer(accountA, accountB, 10000);
@@ -202,8 +204,8 @@ class TransferServiceTest {
 
     @Test
     void shouldTransferWithPercentCommissionFromCreditAccount() {
-        CreditAccount creditAccount = new CreditAccount("111", "Alice", 1000, 5000);
-        DebitAccount debitAccount = new DebitAccount("222", "Bob", 2000);
+        CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new PercentCommission(2), new ConsoleNotificationService());
 
         boolean result = service.transfer(creditAccount, debitAccount, 4000);
@@ -215,8 +217,8 @@ class TransferServiceTest {
 
     @Test
     void shouldSendExactlyOneNotificationOnSuccessfulTransfer() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 10000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 
@@ -228,8 +230,8 @@ class TransferServiceTest {
 
     @Test
     void shouldNotSendNotificationOnFailedTransfer() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 1000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 
@@ -241,8 +243,8 @@ class TransferServiceTest {
 
     @Test
     void shouldHaveCorrectNotificationMessage() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 10000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 
@@ -253,8 +255,8 @@ class TransferServiceTest {
 
     @Test
     void shouldSendNotificationWithCommission() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 11000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 11000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new PercentCommission(1), notificationService);
 
@@ -267,8 +269,8 @@ class TransferServiceTest {
 
     @Test
     void shouldCountMultipleNotifications() {
-        DebitAccount accountA = new DebitAccount("111", "Alice", 20000);
-        DebitAccount accountB = new DebitAccount("222", "Bob", 2000);
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 20000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 

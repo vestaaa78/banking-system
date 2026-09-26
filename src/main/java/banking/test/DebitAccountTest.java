@@ -1,10 +1,13 @@
 package banking.test;
 
+import banking.AccountNumber;
 import banking.DebitAccount;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DebitAccountTest {
+    private static final AccountNumber VALID_NUMBER = new AccountNumber("1234567890");
+    private static final AccountNumber ANOTHER_NUMBER = new AccountNumber("0987654321");
 
     @Test
     void shouldCreateAccountWithCorrectData() {
@@ -12,7 +15,7 @@ class DebitAccountTest {
         String owner = "Ivan";
         double initialBalance = 10000;
 
-        DebitAccount account = new DebitAccount(number, owner, initialBalance);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, owner, initialBalance);
 
         assertEquals("123456", account.getNumber());
         assertEquals("Ivan", account.getOwner());
@@ -21,7 +24,7 @@ class DebitAccountTest {
 
     @Test
     void shouldDepositPositiveAmount() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         account.deposit(5000);
 
@@ -30,7 +33,7 @@ class DebitAccountTest {
 
     @Test
     void shouldNotDepositZeroAmount() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         account.deposit(0);
 
@@ -39,7 +42,7 @@ class DebitAccountTest {
 
     @Test
     void shouldNotDepositNegativeAmount() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         account.deposit(-500);
 
@@ -48,7 +51,7 @@ class DebitAccountTest {
 
     @Test
     void shouldWithdrawSuccessfully() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         boolean result = account.withdraw(8000);
 
@@ -58,7 +61,7 @@ class DebitAccountTest {
 
     @Test
     void shouldNotWithdrawWhenInsufficientFunds() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         boolean result = account.withdraw(15000);
 
@@ -68,7 +71,7 @@ class DebitAccountTest {
 
     @Test
     void shouldNotWithdrawZeroAmount() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         boolean result = account.withdraw(0);
 
@@ -78,7 +81,7 @@ class DebitAccountTest {
 
     @Test
     void shouldNotWithdrawNegativeAmount() {
-        DebitAccount account = new DebitAccount("123456", "Ivan", 10000);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
         boolean result = account.withdraw(-100);
 
@@ -88,16 +91,17 @@ class DebitAccountTest {
 
     @Test
     void shouldNotCreateAccountWithNegativeBalance() {
+        AccountNumber number = new AccountNumber("1234567890");
         assertThrows(IllegalArgumentException.class, () -> {
-            new DebitAccount("111", "Test", -100);
+            new DebitAccount(number, "Test", -100);
         });
     }
-
     @Test
     void testToStringOutput() {
-        DebitAccount account = new DebitAccount("001", "Ivan", 10000.0);
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000.0);
+
         String expected = "DebitAccount{\n" +
-                " number='001',\n" +
+                " number=" + VALID_NUMBER.value() + ",\n" +
                 " owner='Ivan',\n" +
                 " balance=10000.0\n" +
                 "}";

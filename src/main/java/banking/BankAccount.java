@@ -1,12 +1,14 @@
 package banking;
+
 import java.util.Objects;
+
 public abstract class BankAccount {
 
-    private final String number;
+    private final AccountNumber number;
     private final String owner;
     private double balance;
 
-    protected BankAccount(String number, String owner, double initialBalance) {
+    protected BankAccount(AccountNumber number, String owner, double initialBalance) {
         if (initialBalance < 0) {
             throw new IllegalArgumentException("Начальный баланс не может быть отрицательным");
         }
@@ -27,7 +29,7 @@ public abstract class BankAccount {
         return balance;
     }
 
-    public String getNumber() {
+    public AccountNumber getNumber() {
         return number;
     }
 
@@ -44,19 +46,9 @@ public abstract class BankAccount {
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{\n" +
-                " number='" + number + "',\n" +
-                " owner='" + owner + "',\n" +
-                " balance=" + balance + "\n" +
-                "}";
-    }
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || !(o instanceof BankAccount)) return false;
-
         BankAccount that = (BankAccount) o;
         return Objects.equals(this.number, that.number);
     }
@@ -64,5 +56,14 @@ public abstract class BankAccount {
     @Override
     public int hashCode() {
         return Objects.hash(number);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{\n" +
+                " number=" + number.value() + ",\n" +
+                " owner='" + owner + "',\n" +
+                " balance=" + balance + "\n" +
+                "}";
     }
 }
