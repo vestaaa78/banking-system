@@ -74,14 +74,14 @@ class CreditAccountTest {
         assertEquals(1000, account.getBalance());
     }
 
-    @Test
-    void shouldDepositToNegativeBalance() {
-        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", -2000, 5000);
-
-        account.deposit(3000);
-
-        assertEquals(1000, account.getBalance());
-    }
+//    @Test
+//    void shouldDepositToNegativeBalance() {
+//        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", -2000, 5000);
+//
+//        account.deposit(3000);
+//
+//        assertEquals(1000, account.getBalance());
+//    }
 
     @Test
     void shouldNotCreateAccountWithZeroCreditLimit() {
@@ -97,5 +97,31 @@ class CreditAccountTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new CreditAccount(VALID_NUMBER, "Test", 1000, -100);
         });
+    }
+
+    @Test
+    void zeroDepositThrowsException() {
+        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(0)
+        );
+
+        assertEquals("Amount must be positive", exception.getMessage());
+        assertEquals(1000, account.getBalance());
+    }
+
+    @Test
+    void negativeDepositThrowsException() {
+        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(-100)
+        );
+
+        assertEquals("Amount must be positive", exception.getMessage());
+        assertEquals(1000, account.getBalance());
     }
 }

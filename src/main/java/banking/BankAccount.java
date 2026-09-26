@@ -18,12 +18,17 @@ public abstract class BankAccount {
     }
 
     public void deposit(double amount) {
-        if (amount > 0) {
-            balance += amount;
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
         }
+        increaseBalance(amount);
     }
 
-    public abstract boolean withdraw(double amount);
+    protected void increaseBalance(double amount) {
+        balance += amount;
+    }
+
+        public abstract boolean withdraw(double amount);
 
     public double getBalance() {
         return balance;

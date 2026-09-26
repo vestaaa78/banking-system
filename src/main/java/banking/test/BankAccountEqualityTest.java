@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountEqualityTest {
-
+    private static final AccountNumber VALID_NUMBER = new AccountNumber("1234567890");
+    private static final AccountNumber ANOTHER_NUMBER = new AccountNumber("0987654321");
     @Test
     void accountsWithSameNumberAreEqual() {
         AccountNumber accNum = new AccountNumber("1234567890");
@@ -60,5 +61,25 @@ class BankAccountEqualityTest {
 
         AccountNumber valid = new AccountNumber("0000000000");
         assertEquals("0000000000", valid.value());
+    }
+
+    @Test
+    void negativeDepositThrowsException() {
+        BankAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(-100)
+        );
+    }
+
+    @Test
+    void zeroDepositThrowsException() {
+        BankAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(0)
+        );
     }
 }

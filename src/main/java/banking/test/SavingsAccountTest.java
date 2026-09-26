@@ -82,4 +82,30 @@ class SavingsAccountTest {
             new SavingsAccount(VALID_NUMBER, "Test", 1000, -100);
         });
     }
+
+    @Test
+    void zeroDepositThrowsException() {
+        SavingsAccount account = new SavingsAccount(VALID_NUMBER, "Petr", 10000, 1000);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(0)
+        );
+
+        assertEquals("Amount must be positive", exception.getMessage());
+        assertEquals(10000, account.getBalance());
+    }
+
+    @Test
+    void negativeDepositThrowsException() {
+        SavingsAccount account = new SavingsAccount(VALID_NUMBER, "Petr", 10000, 1000);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(-500)
+        );
+
+        assertEquals("Amount must be positive", exception.getMessage());
+        assertEquals(10000, account.getBalance());
+    }
 }

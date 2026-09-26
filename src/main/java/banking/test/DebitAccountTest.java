@@ -32,20 +32,29 @@ class DebitAccountTest {
     }
 
     @Test
-    void shouldNotDepositZeroAmount() {
+    void zeroDepositThrowsException() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        account.deposit(0);
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(0)
+        );
+
+        assertEquals("Amount must be positive", exception.getMessage());
 
         assertEquals(10000, account.getBalance());
     }
 
     @Test
-    void shouldNotDepositNegativeAmount() {
+    void negativeDepositThrowsException() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        account.deposit(-500);
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> account.deposit(-100)
+        );
 
+        assertEquals("Amount must be positive", exception.getMessage());
         assertEquals(10000, account.getBalance());
     }
 
