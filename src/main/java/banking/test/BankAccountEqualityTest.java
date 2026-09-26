@@ -9,28 +9,50 @@ import org.testng.annotations.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class BankAccountEqualityTest {
+class BankAccountEqualityTest {
+
     @Test
-    void accountsWithSameNumberAreEqualRegardlessOfTypeOrBalance() {
+    void accountsWithSameNumberAreEqual() {
         BankAccount debit = new DebitAccount("ACC-001", "Ivan", 10000.0);
-        BankAccount savings = new SavingsAccount("ACC-001", "Ivan", 5000.0, 1000.0);
+        BankAccount savings = new SavingsAccount("ACC-001", "Petr", 5000.0, 1000.0);
+        BankAccount credit = new CreditAccount("ACC-001", "Alex", 0.0, 5000.0);
 
-        BankAccount credit = new CreditAccount("ACC-001", "Ivan", 0.0, 5000.0);
+        // Act & Assert: Они должны быть равны, так как номер счёта является бизнес-ключом
+        assertEquals(debit, savings, "Debit и Savings с одинаковым номером должны быть равны");
+        assertEquals(savings, credit, "Savings и Credit с одинаковым номером должны быть равны");
+        assertEquals(debit, credit, "Debit и Credit с одинаковым номером должны быть равны");
+    }
 
-        BankAccount differentNumber = new DebitAccount("ACC-002", "Ivan", 10000.0);
+    @Test
+    void accountsWithDifferentNumbersAreNotEqual() {
+        BankAccount account1 = new DebitAccount("ACC-001", "Ivan", 10000.0);
+        BankAccount account2 = new DebitAccount("ACC-002", "Ivan", 10000.0);
+        BankAccount account3 = new SavingsAccount("ACC-003", "Ivan", 10000.0, 1000.0);
 
-        assertEquals(debit, debit);
+        assertNotEquals(account1, account2);
+        assertNotEquals(account1, account3);
+    }
 
-        assertEquals(debit, savings);
-        assertEquals(savings, debit);
+    @Test
+    void accountEqualsItself() {
+        BankAccount account = new DebitAccount("ACC-001", "Ivan", 10000.0);
 
-        assertEquals(savings, credit);
-        assertEquals(debit, credit);
+        assertEquals(account, account);
+    }
 
-        assertEquals(debit.hashCode(), savings.hashCode());
-        assertEquals(savings.hashCode(), credit.hashCode());
-        assertEquals(debit.hashCode(), credit.hashCode());
+    @Test
+    void accountDoesNotEqualNull() {
+        BankAccount account = new DebitAccount("ACC-001", "Ivan", 10000.0);
 
-        assertNotEquals(debit, differentNumber);
+        assertNotEquals(account, null);
+    }
+
+    @Test
+    void equalAccountsHaveSameHashCode() {
+        BankAccount debit = new DebitAccount("ACC-001", "Ivan", 10000.0);
+        BankAccount savings = new SavingsAccount("ACC-001", "Petr", 5000.0, 1000.0);
+
+        assertEquals(debit.hashCode(), savings.hashCode(),
+                "Равные счета должны иметь одинаковый hashCode");
     }
 }
