@@ -1,5 +1,5 @@
 package banking;
-
+import java.util.Objects;
 public abstract class BankAccount {
 
     private final String number;
@@ -50,5 +50,19 @@ public abstract class BankAccount {
                 " owner='" + owner + "',\n" +
                 " balance=" + balance + "\n" +
                 "}";
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || !(o instanceof BankAccount)) return false;
+
+        BankAccount that = (BankAccount) o;
+        return Objects.equals(this.number, that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number);
     }
 }
