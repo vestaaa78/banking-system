@@ -28,7 +28,7 @@ public abstract class BankAccount {
         balance += amount;
     }
 
-        public abstract boolean withdraw(double amount);
+    public abstract void withdraw(double amount);
 
     public double getBalance() {
         return balance;
@@ -70,5 +70,13 @@ public abstract class BankAccount {
                 " owner='" + owner + "',\n" +
                 " balance=" + balance + "\n" +
                 "}";
+    }
+
+    protected double getAvailableAmount() {
+        return balance;
+    }
+
+    protected void decreaseBalance(double amount) {
+        balance -= amount;
     }
 }

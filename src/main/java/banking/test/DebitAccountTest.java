@@ -2,6 +2,7 @@ package banking.test;
 
 import banking.AccountNumber;
 import banking.DebitAccount;
+import banking.InsufficientFundsException;
 import banking.InvalidAmountException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,39 +57,42 @@ class DebitAccountTest {
     void shouldWithdrawSuccessfully() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        boolean result = account.withdraw(8000);
+        account.withdraw(8000);
 
-        assertTrue(result);
         assertEquals(2000, account.getBalance());
     }
 
     @Test
-    void shouldNotWithdrawWhenInsufficientFunds() {
+    void shouldThrowExceptionWhenInsufficientFunds() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        boolean result = account.withdraw(15000);
+        InsufficientFundsException exception = assertThrows(
+                InsufficientFundsException.class,
+                () -> account.withdraw(15000)
+        );
 
-        assertFalse(result);
+        assertTrue(exception.getMessage().contains("Insufficient funds"));
+        assertEquals(10000, account.getBalance()); // Баланс не изменился
+    }
+
+    @Test
+    void shouldThrowExceptionOnZeroWithdraw() {
+        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
+
+        assertThrows(
+                InvalidAmountException.class,
+                () -> account.withdraw(0)
+        );
         assertEquals(10000, account.getBalance());
     }
 
     @Test
-    void shouldNotWithdrawZeroAmount() {
+    void shouldThrowExceptionOnNegativeWithdraw() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
-
-        boolean result = account.withdraw(0);
-
-        assertFalse(result);
-        assertEquals(10000, account.getBalance());
-    }
-
-    @Test
-    void shouldNotWithdrawNegativeAmount() {
-        DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
-
-        boolean result = account.withdraw(-100);
-
-        assertFalse(result);
+        assertThrows(
+                InvalidAmountException.class,
+                () -> account.withdraw(-100)
+        );
         assertEquals(10000, account.getBalance());
     }
 

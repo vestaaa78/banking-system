@@ -2,22 +2,25 @@ package banking.test;
 
 import banking.AccountNumber;
 import banking.CreditAccount;
+import banking.InsufficientFundsException;
+import banking.InvalidAmountException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CreditAccountTest {
+
     private static final AccountNumber VALID_NUMBER = new AccountNumber("1234567890");
     private static final AccountNumber ANOTHER_NUMBER = new AccountNumber("0987654321");
+
     @Test
     void shouldCreateAccountWithCorrectData() {
-        String number = "111222";
         String owner = "Alex";
         double initialBalance = 1000;
         double creditLimit = 5000;
 
         CreditAccount account = new CreditAccount(VALID_NUMBER, owner, initialBalance, creditLimit);
 
-        assertEquals("111222", account.getNumber());
+        assertEquals(VALID_NUMBER, account.getNumber());
         assertEquals("Alex", account.getOwner());
         assertEquals(1000, account.getBalance());
         assertEquals(5000, account.getCreditLimit());
@@ -27,8 +30,8 @@ class CreditAccountTest {
     void shouldWithdrawWithinCreditLimit() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        boolean result = account.withdraw(4000);
-        assertTrue(result);
+        account.withdraw(4000);
+
         assertEquals(-3000, account.getBalance());
     }
 
@@ -36,56 +39,57 @@ class CreditAccountTest {
     void shouldWithdrawExactlyAtCreditLimit() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        boolean result = account.withdraw(6000);
+        account.withdraw(6000);
 
-        assertTrue(result);
         assertEquals(-5000, account.getBalance());
     }
 
     @Test
-    void shouldNotWithdrawExceedingCreditLimit() {
+    void shouldThrowExceptionWhenExceedingCreditLimit() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
         account.withdraw(4000); // balance = -3000
 
-        boolean result = account.withdraw(3000); // -3000 - 3000 = -6000 < -5000
+        assertThrows(InsufficientFundsException.class, () -> {
+            account.withdraw(3000); // -3000 - 3000 = -6000 < -5000
+        });
 
-        assertFalse(result);
         assertEquals(-3000, account.getBalance());
     }
 
     @Test
-    void shouldNotWithdrawZeroAmount() {
+    void shouldThrowExceptionOnZeroWithdraw() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        boolean result = account.withdraw(0);
+        assertThrows(InvalidAmountException.class, () -> {
+            account.withdraw(0);
+        });
 
-        assertFalse(result);
         assertEquals(1000, account.getBalance());
     }
 
     @Test
-    void shouldNotWithdrawNegativeAmount() {
-
+    void shouldThrowExceptionOnNegativeWithdraw() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        boolean result = account.withdraw(-100);
+        assertThrows(InvalidAmountException.class, () -> {
+            account.withdraw(-100);
+        });
 
-        assertFalse(result);
         assertEquals(1000, account.getBalance());
     }
 
-//    @Test
-//    void shouldDepositToNegativeBalance() {
-//        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", -2000, 5000);
-//
-//        account.deposit(3000);
-//
-//        assertEquals(1000, account.getBalance());
-//    }
+    @Test
+    void shouldDepositToNegativeBalance() {
+        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
+        account.withdraw(3000); // balance = -2000
+
+        account.deposit(3000);
+
+        assertEquals(1000, account.getBalance());
+    }
 
     @Test
     void shouldNotCreateAccountWithZeroCreditLimit() {
-
         assertThrows(IllegalArgumentException.class, () -> {
             new CreditAccount(VALID_NUMBER, "Test", 1000, 0);
         });
@@ -93,22 +97,27 @@ class CreditAccountTest {
 
     @Test
     void shouldNotCreateAccountWithNegativeCreditLimit() {
-
         assertThrows(IllegalArgumentException.class, () -> {
             new CreditAccount(VALID_NUMBER, "Test", 1000, -100);
         });
     }
 
     @Test
+    void shouldDepositPositiveAmount() {
+        CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
+
+        account.deposit(5000);
+        assertEquals(6000, account.getBalance());
+    }
+
+    @Test
     void zeroDepositThrowsException() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> account.deposit(0)
-        );
+        assertThrows(InvalidAmountException.class, () -> {
+            account.deposit(0);
+        });
 
-        assertEquals("Amount must be positive", exception.getMessage());
         assertEquals(1000, account.getBalance());
     }
 
@@ -116,12 +125,10 @@ class CreditAccountTest {
     void negativeDepositThrowsException() {
         CreditAccount account = new CreditAccount(VALID_NUMBER, "Alex", 1000, 5000);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> account.deposit(-100)
-        );
+        assertThrows(InvalidAmountException.class, () -> {
+            account.deposit(-100);
+        });
 
-        assertEquals("Amount must be positive", exception.getMessage());
         assertEquals(1000, account.getBalance());
     }
 }

@@ -13,30 +13,25 @@ public class CreditAccount extends BankAccount {
     }
 
     @Override
-    public boolean withdraw(double amount) {
-        if (!isValidAmount(amount)) {
-            return false;
-        }
+    protected double getAvailableAmount() {
+        return getBalance() + creditLimit;
+    }
 
-        if (getBalance() - amount >= -creditLimit) {
-            setBalance(getBalance() - amount);
-            return true;
+    @Override
+    public void withdraw(double amount) {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Amount must be positive");
         }
-        return false;
+        if (amount > getAvailableAmount()) {
+            throw new InsufficientFundsException(
+                    "Insufficient funds. Available: " + getAvailableAmount() + ", requested: " + amount
+            );
+        }
+        decreaseBalance(amount);
     }
 
     public double getCreditLimit() {
         return creditLimit;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{\n" +
-                " number='" + getNumber() + "',\n" +
-                " owner='" + getOwner() + "',\n" +
-                " balance=" + getBalance() + ",\n" +
-                " creditLimit=" + creditLimit + "\n" +
-                "}";
     }
 }
 
