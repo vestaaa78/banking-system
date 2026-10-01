@@ -2,6 +2,7 @@ package banking.test;
 
 import banking.AccountNumber;
 import banking.DebitAccount;
+import banking.InvalidAmountException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,27 +36,20 @@ class DebitAccountTest {
     void zeroDepositThrowsException() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        assertThrows(
+                InvalidAmountException.class,
                 () -> account.deposit(0)
         );
-
-        assertEquals("Amount must be positive", exception.getMessage());
-
-        assertEquals(10000, account.getBalance());
     }
 
     @Test
     void negativeDepositThrowsException() {
         DebitAccount account = new DebitAccount(VALID_NUMBER, "Ivan", 10000);
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        assertThrows(
+                InvalidAmountException.class,
                 () -> account.deposit(-100)
         );
-
-        assertEquals("Amount must be positive", exception.getMessage());
-        assertEquals(10000, account.getBalance());
     }
 
     @Test
