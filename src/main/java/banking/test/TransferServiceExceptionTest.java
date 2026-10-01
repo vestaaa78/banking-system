@@ -83,4 +83,24 @@ class TransferServiceExceptionTest {
         assertEquals(10000, from.getBalance());
         assertEquals(2000, to.getBalance());
     }
+
+    @Test
+    void failedTransferDoesNotChangeBalances() {
+        AccountNumber fromNumber = new AccountNumber("1111111111");
+        AccountNumber toNumber = new AccountNumber("2222222222");
+
+        BankAccount from = new DebitAccount(fromNumber, "Alice", 1000);
+        BankAccount to = new DebitAccount(toNumber, "Bob", 2000);
+
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(
+                InsufficientFundsException.class,
+                () -> service.transfer(from, to, 5000)
+        );
+
+        assertEquals(1000, from.getBalance(), "Баланс отправителя не должен измениться при ошибке");
+
+        assertEquals(2000, to.getBalance(), "Баланс получателя не должен измениться при ошибке");
+    }
 }
