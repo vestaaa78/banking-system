@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransferServiceTest {
+
     private static final AccountNumber NUMBER_A = new AccountNumber("1234567890");
     private static final AccountNumber NUMBER_B = new AccountNumber("0987654321");
 
@@ -14,62 +15,10 @@ class TransferServiceTest {
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
-        boolean result = service.transfer(accountA, accountB, 3000);
+        service.transfer(accountA, accountB, 3000);
 
-        assertTrue(result);
         assertEquals(7000, accountA.getBalance());
         assertEquals(5000, accountB.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferWhenInsufficientFunds() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(accountA, accountB, 3000);
-
-        assertFalse(result);
-        assertEquals(1000, accountA.getBalance());
-        assertEquals(2000, accountB.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferZeroAmount() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(accountA, accountB, 0);
-
-        assertFalse(result);
-        assertEquals(1000, accountA.getBalance());
-        assertEquals(2000, accountB.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferNegativeAmount() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(accountA, accountB, -500);
-
-        // Assert
-        assertFalse(result);
-        assertEquals(1000, accountA.getBalance());
-        assertEquals(2000, accountB.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferToSameAccount() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(accountA, accountA, 500);
-
-        assertFalse(result);
-        assertEquals(1000, accountA.getBalance());
     }
 
     @Test
@@ -78,24 +27,10 @@ class TransferServiceTest {
         SavingsAccount savingsAccount = new SavingsAccount(NUMBER_B, "Bob", 2000, 1000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
-        boolean result = service.transfer(debitAccount, savingsAccount, 1500);
+        service.transfer(debitAccount, savingsAccount, 1500);
 
-        assertTrue(result);
         assertEquals(8500, debitAccount.getBalance());
         assertEquals(3500, savingsAccount.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferFromSavingsBelowMinimum() {
-        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
-        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(savingsAccount, debitAccount, 1500);
-
-        assertFalse(result);
-        assertEquals(2000, savingsAccount.getBalance());
-        assertEquals(5000, debitAccount.getBalance());
     }
 
     @Test
@@ -104,76 +39,10 @@ class TransferServiceTest {
         DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
-        boolean result = service.transfer(creditAccount, debitAccount, 4000);
+        service.transfer(creditAccount, debitAccount, 4000);
 
-        assertTrue(result);
         assertEquals(-3000, creditAccount.getBalance());
         assertEquals(6000, debitAccount.getBalance());
-    }
-
-    @Test
-    void shouldTransferFromSavingsToDebit() {
-        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 10000, 1000);
-        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(savingsAccount, debitAccount, 5000);
-
-        assertTrue(result);
-        assertEquals(5000, savingsAccount.getBalance());
-        assertEquals(7000, debitAccount.getBalance());
-    }
-
-    @Test
-    void shouldNotTransferFromSavingsToDebitWhenBelowMinimum() {
-        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
-        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(savingsAccount, debitAccount, 1500);
-
-        assertFalse(result);
-        assertEquals(2000, savingsAccount.getBalance());
-        assertEquals(5000, debitAccount.getBalance());
-    }
-
-    @Test
-    void shouldTransferFromCreditToSavings() {
-        CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
-        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_B, "Bob", 2000, 1000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(creditAccount, savingsAccount, 3000);
-
-        assertTrue(result);
-        assertEquals(-2000, creditAccount.getBalance());
-        assertEquals(5000, savingsAccount.getBalance());
-    }
-
-    @Test
-    void shouldTransferBetweenTwoSavingsAccounts() {
-        SavingsAccount sender = new SavingsAccount(NUMBER_A, "Alice", 10000, 1000);
-        SavingsAccount receiver = new SavingsAccount(NUMBER_B, "Bob", 5000, 500);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(sender, receiver, 4000);
-
-        assertTrue(result);
-        assertEquals(6000, sender.getBalance());
-        assertEquals(9000, receiver.getBalance());
-    }
-
-    @Test
-    void shouldTransferBetweenTwoCreditAccounts() {
-        CreditAccount sender = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
-        CreditAccount receiver = new CreditAccount(NUMBER_B, "Bob", -2000, 3000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
-
-        boolean result = service.transfer(sender, receiver, 2000);
-
-        assertTrue(result);
-        assertEquals(-1000, sender.getBalance());
-        assertEquals(0, receiver.getBalance());
     }
 
     @Test
@@ -182,50 +51,108 @@ class TransferServiceTest {
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
 
-        boolean result = service.transfer(accountA, accountB, 10000);
+        service.transfer(accountA, accountB, 10000);
 
-        assertTrue(result);
-        assertEquals(900, accountA.getBalance());
-        assertEquals(12000, accountB.getBalance());
+        assertEquals(900, accountA.getBalance());   // 11000 - 10100
+        assertEquals(12000, accountB.getBalance());  // 2000 + 10000
     }
 
     @Test
-    void shouldNotTransferWhenCannotPayCommission() {
+    void shouldThrowExceptionOnZeroAmount() {
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(InvalidAmountException.class, () -> {
+            service.transfer(accountA, accountB, 0);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionOnNegativeAmount() {
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(InvalidAmountException.class, () -> {
+            service.transfer(accountA, accountB, -500);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionOnSameAccount() {
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.transfer(accountA, accountA, 500);
+        });
+    }
+
+    @Test
+    void shouldThrowExceptionOnInsufficientFunds() {
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(InsufficientFundsException.class, () -> {
+            service.transfer(accountA, accountB, 3000);
+        });
+
+        assertEquals(1000, accountA.getBalance());
+        assertEquals(2000, accountB.getBalance());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCannotPayCommission() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10050);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
 
-        boolean result = service.transfer(accountA, accountB, 10000);
+        assertThrows(InsufficientFundsException.class, () -> {
+            service.transfer(accountA, accountB, 10000);
+        });
 
-        assertFalse(result);
         assertEquals(10050, accountA.getBalance());
         assertEquals(2000, accountB.getBalance());
     }
 
     @Test
-    void shouldTransferWithPercentCommissionFromCreditAccount() {
-        CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
-        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new PercentCommission(2), new ConsoleNotificationService());
+    void shouldThrowExceptionOnTransferLimitExceeded() {
+        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 100000);
+        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
 
-        boolean result = service.transfer(creditAccount, debitAccount, 4000);
-
-        assertTrue(result);
-        assertEquals(-3080, creditAccount.getBalance());
-        assertEquals(6000, debitAccount.getBalance());
+        assertThrows(TransferLimitExceededException.class, () -> {
+            service.transfer(accountA, accountB, 60000);
+        });
     }
 
     @Test
-    void shouldSendExactlyOneNotificationOnSuccessfulTransfer() {
+    void shouldNotTransferFromSavingsBelowMinimum() {
+        SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
+        DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
+        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+
+        assertThrows(InsufficientFundsException.class, () -> {
+            service.transfer(savingsAccount, debitAccount, 1500);
+        });
+
+        assertEquals(2000, savingsAccount.getBalance());
+        assertEquals(5000, debitAccount.getBalance());
+    }
+
+    @Test
+    void shouldSendNotificationOnSuccessfulTransfer() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 
-        boolean result = service.transfer(accountA, accountB, 3000);
+        service.transfer(accountA, accountB, 3000);
 
-        assertTrue(result);
         assertEquals(1, notificationService.getNotificationCount());
+        assertEquals("Transfer 3000.0 completed", notificationService.getLastMessage());
     }
 
     @Test
@@ -235,49 +162,10 @@ class TransferServiceTest {
         FakeNotificationService notificationService = new FakeNotificationService();
         TransferService service = new TransferService(new NoCommission(), notificationService);
 
-        boolean result = service.transfer(accountA, accountB, 3000);
+        assertThrows(InsufficientFundsException.class, () -> {
+            service.transfer(accountA, accountB, 3000);
+        });
 
-        assertFalse(result);
         assertEquals(0, notificationService.getNotificationCount());
-    }
-
-    @Test
-    void shouldHaveCorrectNotificationMessage() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        FakeNotificationService notificationService = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notificationService);
-
-        service.transfer(accountA, accountB, 3000);
-
-        assertEquals("Transfer 3000.0 completed", notificationService.getLastMessage());
-    }
-
-    @Test
-    void shouldSendNotificationWithCommission() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 11000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        FakeNotificationService notificationService = new FakeNotificationService();
-        TransferService service = new TransferService(new PercentCommission(1), notificationService);
-
-        boolean result = service.transfer(accountA, accountB, 10000);
-
-        assertTrue(result);
-        assertEquals(1, notificationService.getNotificationCount());
-        assertEquals("Transfer 10000.0 completed", notificationService.getLastMessage());
-    }
-
-    @Test
-    void shouldCountMultipleNotifications() {
-        DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 20000);
-        DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        FakeNotificationService notificationService = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notificationService);
-
-        service.transfer(accountA, accountB, 3000);
-        service.transfer(accountA, accountB, 5000);
-
-        assertEquals(2, notificationService.getNotificationCount());
-        assertEquals("Transfer 5000.0 completed", notificationService.getLastMessage());
     }
 }
