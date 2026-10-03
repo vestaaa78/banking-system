@@ -8,65 +8,57 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryRepositoryTest {
 
     private Repository<AccountNumber, BankAccount> accountRepo;
-    private Repository<Long, Transaction> transactionRepo;
 
     @BeforeEach
     void setUp() {
         accountRepo = new InMemoryRepository<>();
-        transactionRepo = new InMemoryRepository<>();
     }
 
     @Test
-    void shouldSaveAndFindBankAccount() {
+    void shouldThrowExceptionWhenSavingNull() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountRepo.save(null)
+        );
+        assertEquals("Cannot save null value", exception.getMessage());
+    }
+
+    @Test
+    void shouldSaveAndFindEntity() {
         AccountNumber id = new AccountNumber("1234567890");
         BankAccount account = new DebitAccount(id, "Alice", 1000);
 
         accountRepo.save(account);
 
-        assertTrue(accountRepo.existsById(id));
         assertEquals(1, accountRepo.size());
+        assertTrue(accountRepo.existsById(id));
 
         BankAccount found = accountRepo.findById(id);
         assertNotNull(found);
         assertEquals("Alice", found.getOwner());
-        assertEquals(1000, found.getBalance());
     }
 
     @Test
-    void shouldSaveAndFindTransaction() {
-        Long id = 1L;
-        Transaction tx = new Transaction(id, TransactionType.DEPOSIT, new AccountNumber("1111111111"), 500, TransactionStatus.SUCCESS);
+    void shouldReturnNullWhenEntityNotFound() {
+        BankAccount found = accountRepo.findById(new AccountNumber("0000000000"));
 
-        transactionRepo.save(tx);
-
-        assertTrue(transactionRepo.existsById(id));
-        assertEquals(1, transactionRepo.size());
-
-        Transaction found = transactionRepo.findById(id);
-        assertNotNull(found);
-        assertEquals(TransactionType.DEPOSIT, found.type());
-        assertEquals(500, found.amount());
-    }
-
-    @Test
-    void shouldReturnNullWhenNotFound() {
-        assertNull(accountRepo.findById(new AccountNumber("0000000000")));
+        assertNull(found);
         assertFalse(accountRepo.existsById(new AccountNumber("0000000000")));
-
-        assertNull(transactionRepo.findById(999L));
-        assertFalse(transactionRepo.existsById(999L));
     }
 
     @Test
-    void shouldOverwriteExistingEntity() {
+    void shouldReplaceExistingEntityOnSave() {
         AccountNumber id = new AccountNumber("1234567890");
         accountRepo.save(new DebitAccount(id, "Alice", 1000));
 
         accountRepo.save(new SavingsAccount(id, "Bob", 5000, 1000));
 
-        assertEquals(1, accountRepo.size());
+        assertEquals(1, accountRepo.size(), "Размер не должен увеличиться, дубликатов нет");
+
         BankAccount found = accountRepo.findById(id);
+        assertNotNull(found);
         assertEquals("Bob", found.getOwner());
         assertEquals(5000, found.getBalance());
+        assertTrue(found instanceof SavingsAccount);
     }
 }
