@@ -2,7 +2,7 @@ package banking;
 
 import java.util.Objects;
 
-public abstract class BankAccount {
+public abstract class BankAccount implements Identifiable<AccountNumber> {
 
     private final AccountNumber number;
     private final String owner;
@@ -74,6 +74,11 @@ public abstract class BankAccount {
 
     protected double getAvailableAmount() {
         return balance;
+    }
+
+    @Override
+    public AccountNumber getId() {
+        return number; // или return getNumber();
     }
 
     protected void decreaseBalance(double amount) {

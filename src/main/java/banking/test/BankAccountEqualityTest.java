@@ -82,4 +82,12 @@ class BankAccountEqualityTest {
                 () -> account.deposit(0)
         );
     }
+
+    @Test
+    void bankAccountShouldImplementIdentifiable() {
+        AccountNumber number = new AccountNumber("1234567890");
+        BankAccount account = new DebitAccount(number, "Ivan", 10000);
+
+        assertEquals(number, account.getId());
+    }
 }
