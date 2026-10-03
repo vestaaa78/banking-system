@@ -10,4 +10,8 @@ public class BankAccountUtils {
         }
         return total;
     }
+    public static void addDemoDebitAccounts(List<? super DebitAccount> target) {
+        target.add(new DebitAccount(new AccountNumber("1111111111"), "Demo User 1", 1000));
+        target.add(new DebitAccount(new AccountNumber("2222222222"), "Demo User 2", 2000));
+    }
 }
