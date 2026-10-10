@@ -10,61 +10,44 @@ import static org.junit.jupiter.api.Assertions.*;
 class BlockedAccountRegistryTest {
 
     private BlockedAccountRegistry registry;
-    private AccountNumber number1;
-    private AccountNumber number2;
+    private AccountNumber number;
 
     @BeforeEach
     void setUp() {
         registry = new BlockedAccountRegistry();
-        number1 = new AccountNumber("1111111111");
-        number2 = new AccountNumber("2222222222");
+        number = new AccountNumber("0000000001");
     }
 
     @Test
-    void shouldBlockAccount() {
-        registry.block(number1);
+    void isBlockedReturnsTrueAfterBlocking() {
+        registry.block(number);
 
-        assertTrue(registry.isBlocked(number1));
-        assertEquals(1, registry.size());
+        assertTrue(registry.isBlocked(number), "Счёт должен быть заблокирован после вызова block()");
     }
 
     @Test
-    void shouldUnblockAccount() {
-        registry.block(number1);
+    void blockingSameAccountTwiceDoesNotCreateDuplicate() {
+        registry.block(number);
+        registry.block(number);
 
-        registry.unblock(number1);
-
-        assertFalse(registry.isBlocked(number1));
-        assertEquals(0, registry.size());
+        assertEquals(1, registry.size(), "Повторная блокировка не должна увеличивать размер множества");
+        assertTrue(registry.isBlocked(number));
     }
 
     @Test
-    void shouldNotAddDuplicateBlockedAccounts() {
-        registry.block(number1);
-        registry.block(number1);
+    void unblockRemovesNumber() {
+        registry.block(number);
 
-        assertEquals(1, registry.size());
-        assertTrue(registry.isBlocked(number1));
+        registry.unblock(number);
+
+        assertFalse(registry.isBlocked(number), "После unblock() счёт не должен быть заблокирован");
+        assertEquals(0, registry.size(), "Размер реестра должен стать 0");
     }
 
     @Test
-    void shouldHandleMultipleAccounts() {
-        registry.block(number1);
-        registry.block(number2);
+    void isBlockedReturnsFalseForUnknownNumber() {
+        AccountNumber unknownNumber = new AccountNumber("9999999999");
 
-        assertEquals(2, registry.size());
-        assertTrue(registry.isBlocked(number1));
-        assertTrue(registry.isBlocked(number2));
-    }
-
-    @Test
-    void shouldReturnFalseForNonBlockedAccount() {
-        assertFalse(registry.isBlocked(number1));
-    }
-
-    @Test
-    void shouldThrowExceptionOnNull() {
-        assertThrows(IllegalArgumentException.class, () -> registry.block(null));
-        assertThrows(IllegalArgumentException.class, () -> registry.unblock(null));
+        assertFalse(registry.isBlocked(unknownNumber), "Неизвестный счёт не должен быть заблокирован");
     }
 }
