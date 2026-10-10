@@ -24,7 +24,8 @@ class TransferServiceBlockedAccountTest {
         service = new TransferService(
                 new NoCommission(),
                 notificationService,
-                blockedAccounts
+                blockedAccounts,
+                new TransactionJournal()
         );
         from = new DebitAccount(NUMBER_FROM, "Alice", 10000);
         to = new DebitAccount(NUMBER_TO, "Bob", 2000);

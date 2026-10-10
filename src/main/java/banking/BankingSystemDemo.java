@@ -17,10 +17,12 @@ public class BankingSystemDemo {
         System.out.println();
 
         BlockedAccountRegistry blockedAccounts = new BlockedAccountRegistry();
+        TransactionJournal journal = new TransactionJournal();
         TransferService transferService = new TransferService(
                 new NoCommission(),
                 new ConsoleNotificationService(),
-                blockedAccounts
+                blockedAccounts,
+                journal
         );
 
         System.out.println("Сценарий 1: Успешный перевод");
