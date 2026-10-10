@@ -13,7 +13,11 @@ class TransferServiceTest {
     void shouldTransferSuccessfully() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         service.transfer(accountA, accountB, 3000);
 
@@ -25,7 +29,11 @@ class TransferServiceTest {
     void shouldTransferBetweenDifferentAccountTypes() {
         DebitAccount debitAccount = new DebitAccount(NUMBER_A, "Alice", 10000);
         SavingsAccount savingsAccount = new SavingsAccount(NUMBER_B, "Bob", 2000, 1000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         service.transfer(debitAccount, savingsAccount, 1500);
 
@@ -37,7 +45,11 @@ class TransferServiceTest {
     void shouldTransferFromCreditAccount() {
         CreditAccount creditAccount = new CreditAccount(NUMBER_A, "Alice", 1000, 5000);
         DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         service.transfer(creditAccount, debitAccount, 4000);
 
@@ -49,7 +61,11 @@ class TransferServiceTest {
     void shouldTransferWithPercentCommission() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 11000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         service.transfer(accountA, accountB, 10000);
 
@@ -61,7 +77,11 @@ class TransferServiceTest {
     void shouldThrowExceptionOnZeroAmount() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InvalidAmountException.class, () -> {
             service.transfer(accountA, accountB, 0);
@@ -72,7 +92,11 @@ class TransferServiceTest {
     void shouldThrowExceptionOnNegativeAmount() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InvalidAmountException.class, () -> {
             service.transfer(accountA, accountB, -500);
@@ -82,7 +106,11 @@ class TransferServiceTest {
     @Test
     void shouldThrowExceptionOnSameAccount() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(IllegalArgumentException.class, () -> {
             service.transfer(accountA, accountA, 500);
@@ -93,7 +121,11 @@ class TransferServiceTest {
     void shouldThrowExceptionOnInsufficientFunds() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InsufficientFundsException.class, () -> {
             service.transfer(accountA, accountB, 3000);
@@ -107,7 +139,11 @@ class TransferServiceTest {
     void shouldThrowExceptionWhenCannotPayCommission() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10050);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new PercentCommission(1), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InsufficientFundsException.class, () -> {
             service.transfer(accountA, accountB, 10000);
@@ -121,7 +157,11 @@ class TransferServiceTest {
     void shouldThrowExceptionOnTransferLimitExceeded() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 100000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(TransferLimitExceededException.class, () -> {
             service.transfer(accountA, accountB, 60000);
@@ -132,7 +172,11 @@ class TransferServiceTest {
     void shouldNotTransferFromSavingsBelowMinimum() {
         SavingsAccount savingsAccount = new SavingsAccount(NUMBER_A, "Alice", 2000, 1000);
         DebitAccount debitAccount = new DebitAccount(NUMBER_B, "Bob", 5000);
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InsufficientFundsException.class, () -> {
             service.transfer(savingsAccount, debitAccount, 1500);
@@ -147,7 +191,11 @@ class TransferServiceTest {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 10000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notificationService);
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         service.transfer(accountA, accountB, 3000);
 
@@ -160,7 +208,11 @@ class TransferServiceTest {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
         DebitAccount accountB = new DebitAccount(NUMBER_B, "Bob", 2000);
         FakeNotificationService notificationService = new FakeNotificationService();
-        TransferService service = new TransferService(new NoCommission(), notificationService);
+        TransferService service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry()
+        );
 
         assertThrows(InsufficientFundsException.class, () -> {
             service.transfer(accountA, accountB, 3000);

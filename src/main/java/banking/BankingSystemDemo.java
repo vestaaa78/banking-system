@@ -16,9 +16,11 @@ public class BankingSystemDemo {
         System.out.println(bob);
         System.out.println();
 
+        BlockedAccountRegistry blockedAccounts = new BlockedAccountRegistry();
         TransferService transferService = new TransferService(
                 new NoCommission(),
-                new ConsoleNotificationService()
+                new ConsoleNotificationService(),
+                blockedAccounts
         );
 
         System.out.println("Сценарий 1: Успешный перевод");
