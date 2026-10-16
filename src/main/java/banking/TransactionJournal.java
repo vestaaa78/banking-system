@@ -1,6 +1,7 @@
 package banking;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TransactionJournal {
@@ -20,5 +21,15 @@ public class TransactionJournal {
 
     public int size() {
         return transactions.size();
+    }
+
+    public void removeRejected() {
+        Iterator<Transaction> iterator = transactions.iterator();
+        while (iterator.hasNext()) {
+            Transaction tx = iterator.next();
+            if (tx.status() == TransactionStatus.REJECTED) {
+                iterator.remove();
+            }
+        }
     }
 }
