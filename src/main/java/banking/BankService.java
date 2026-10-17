@@ -36,4 +36,22 @@ public class BankService {
     public int accountCount() {
         return accounts.size();
     }
+
+    public void transfer(AccountNumber fromNumber, AccountNumber toNumber, double amount) {
+        if (fromNumber == null || toNumber == null) {
+            throw new IllegalArgumentException("Account numbers cannot be null");
+        }
+
+        BankAccount from = accounts.findById(fromNumber);
+        if (from == null) {
+            throw new IllegalArgumentException("Source account not found: " + fromNumber.value());
+        }
+
+        BankAccount to = accounts.findById(toNumber);
+        if (to == null) {
+            throw new IllegalArgumentException("Target account not found: " + toNumber.value());
+        }
+        transferService.transfer(from, to, amount);
+    }
+
 }
