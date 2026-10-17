@@ -28,7 +28,7 @@ public class TransferService {
             throw new InvalidAmountException("Amount must be positive");
         }
 
-        if (from == to) {
+        if (from.equals(to)) {
             throw new IllegalArgumentException("Cannot transfer to the same account");
         }
 

@@ -17,7 +17,12 @@ class TransferServiceExceptionTest {
 
     @BeforeEach
     void setUp() {
-        service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry(),
+                new TransactionJournal()
+        );
         from = new DebitAccount(NUMBER_FROM, "Alice", 10000);
         to = new DebitAccount(NUMBER_TO, "Bob", 2000);
     }
@@ -92,7 +97,12 @@ class TransferServiceExceptionTest {
         BankAccount from = new DebitAccount(fromNumber, "Alice", 1000);
         BankAccount to = new DebitAccount(toNumber, "Bob", 2000);
 
-        TransferService service = new TransferService(new NoCommission(), new ConsoleNotificationService());
+        service = new TransferService(
+                new NoCommission(),
+                new ConsoleNotificationService(),
+                new BlockedAccountRegistry(),
+                new TransactionJournal()
+        );
 
         assertThrows(
                 InsufficientFundsException.class,

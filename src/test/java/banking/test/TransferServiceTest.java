@@ -111,6 +111,7 @@ class TransferServiceTest {
     @Test
     void shouldThrowExceptionOnSameAccount() {
         DebitAccount accountA = new DebitAccount(NUMBER_A, "Alice", 1000);
+        DebitAccount accountB = new DebitAccount(NUMBER_A, "Alice", 1000);
         TransferService service = new TransferService(
                 new NoCommission(),
                 new ConsoleNotificationService(),
@@ -119,7 +120,7 @@ class TransferServiceTest {
         );
 
         assertThrows(IllegalArgumentException.class, () -> {
-            service.transfer(accountA, accountA, 500);
+            service.transfer(accountA, accountB, 500);
         });
     }
 
