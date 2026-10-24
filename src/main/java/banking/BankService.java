@@ -1,5 +1,8 @@
 package banking;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 public class BankService {
     private final Repository<AccountNumber, BankAccount> accounts;
     private final TransferService transferService;
@@ -52,6 +55,20 @@ public class BankService {
             throw new IllegalArgumentException("Target account not found: " + toNumber.value());
         }
         transferService.transfer(from, to, amount);
+    }
+    public List<BankAccount> findAccounts(Predicate<? super BankAccount> condition) {
+        if (condition == null) {
+            throw new IllegalArgumentException("Predicate cannot be null");
+        }
+
+        List<BankAccount> allAccounts = accounts.findAll();
+        return CollectionFunctions.filter(allAccounts, condition);
+    }
+
+    private List<BankAccount> getAllAccounts() {
+        throw new UnsupportedOperationException(
+                "Repository должен иметь метод findAll() для поддержки findAccounts()"
+        );
     }
 
 }
