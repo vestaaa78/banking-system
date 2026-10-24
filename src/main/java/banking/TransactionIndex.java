@@ -19,7 +19,19 @@ public class TransactionIndex {
 
         list.add(tx);
     }
-
+    public void remove(Transaction tx) {
+        if (tx == null) {
+            return;
+        }
+        AccountNumber number = tx.account();
+        List<Transaction> list = byAccount.get(number);
+        if (list != null) {
+            list.remove(tx);
+            if (list.isEmpty()) {
+                byAccount.remove(number);
+            }
+        }
+    }
 
     public List<Transaction> findByAccount(AccountNumber number) {
         if (number == null) {

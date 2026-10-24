@@ -7,12 +7,13 @@ import java.util.List;
 public class TransactionJournal {
 
     private final List<Transaction> transactions = new ArrayList<>();
-
+    private final TransactionIndex index = new TransactionIndex();
     public void add(Transaction transaction) {
         if (transaction == null) {
             throw new IllegalArgumentException("Transaction cannot be null");
         }
         transactions.add(transaction);
+        index.add(transaction);
     }
 
     public List<Transaction> findAll() {
@@ -29,6 +30,7 @@ public class TransactionJournal {
             Transaction tx = iterator.next();
             if (tx.status() == TransactionStatus.REJECTED) {
                 iterator.remove();
+                index.remove(tx);
             }
         }
     }
@@ -37,13 +39,6 @@ public class TransactionJournal {
         if (number == null) {
             throw new IllegalArgumentException("Account number cannot be null");
         }
-
-        List<Transaction> result = new ArrayList<>();
-        for (Transaction tx : transactions) {
-            if (tx.account().equals(number)) {
-                result.add(tx);
-            }
-        }
-        return result;
+        return index.findByAccount(number);
     }
 }
