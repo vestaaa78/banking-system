@@ -1,5 +1,7 @@
 package banking;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -60,7 +62,6 @@ public class BankService {
         if (condition == null) {
             throw new IllegalArgumentException("Predicate cannot be null");
         }
-
         List<BankAccount> allAccounts = accounts.findAll();
         return CollectionFunctions.filter(allAccounts, condition);
     }
@@ -71,4 +72,12 @@ public class BankService {
         );
     }
 
+    public List<BankAccount> sortedAccounts(Comparator<? super BankAccount> comparator) {
+        if (comparator == null) {
+            throw new IllegalArgumentException("Comparator cannot be null");
+        }
+        List<BankAccount> result = new ArrayList<>(accounts.findAll());
+        result.sort(comparator);
+        return result;
+    }
 }
