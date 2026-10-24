@@ -2,6 +2,7 @@ package banking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -40,5 +41,17 @@ public final class CollectionFunctions {
             result.add(mapper.apply(value));
         }
         return result;
+    }
+    public static <T> void forEach(List<T> source, Consumer<? super T> action) {
+        if (source == null) {
+            throw new IllegalArgumentException("Source list cannot be null");
+        }
+        if (action == null) {
+            throw new IllegalArgumentException("Action cannot be null");
+        }
+
+        for (T value : source) {
+            action.accept(value);
+        }
     }
 }
