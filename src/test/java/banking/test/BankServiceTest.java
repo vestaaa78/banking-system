@@ -16,7 +16,7 @@ class BankServiceTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
         number1 = new AccountNumber("1111111111");
         number2 = new AccountNumber("2222222222");
     }

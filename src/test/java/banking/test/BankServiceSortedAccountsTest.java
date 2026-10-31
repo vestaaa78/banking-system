@@ -17,7 +17,7 @@ class BankServiceSortedAccountsTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
 
         bankService.openAccount(new DebitAccount(new AccountNumber("3333333333"), "Charlie", 5000));
         bankService.openAccount(new SavingsAccount(new AccountNumber("1111111111"), "Alice", 150000, 10000));
@@ -116,7 +116,7 @@ class BankServiceSortedAccountsTest {
     @Test
     void sortByBalanceForEmptyRepository() {
         Repository<AccountNumber, BankAccount> emptyRepo = new InMemoryRepository<>();
-        BankService emptyBank = new BankService(emptyRepo, null);
+        BankService emptyBank = new BankService(emptyRepo, null, null);
         Comparator<BankAccount> byBalance = Comparator.comparingDouble(BankAccount::getBalance);
 
         List<BankAccount> result = emptyBank.sortedAccounts(byBalance);

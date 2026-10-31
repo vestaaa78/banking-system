@@ -6,7 +6,7 @@ public class StreamMapDemo {
 
     public static void main(String[] args) {
         Repository<AccountNumber, BankAccount> repository = new InMemoryRepository<>();
-        BankService bank = new BankService(repository, null);
+        BankService bank = new BankService(repository, null, null);
 
         bank.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 5000));
         bank.openAccount(new SavingsAccount(new AccountNumber("2222222222"), "Bob", 10000, 1000));

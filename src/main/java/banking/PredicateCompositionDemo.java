@@ -1,12 +1,12 @@
 package banking;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class PredicateCompositionDemo {
 
     public static void main(String[] args) {
-        // Инициализация
         Repository<AccountNumber, BankAccount> repository = new InMemoryRepository<>();
         BlockedAccountRegistry blockedAccounts = new BlockedAccountRegistry();
         TransferService transferService = new TransferService(
@@ -15,9 +15,9 @@ public class PredicateCompositionDemo {
                 blockedAccounts,
                 new TransactionJournal()
         );
-        BankService bank = new BankService(repository, transferService);
 
-        // Создаём тестовые счета
+        BankService bank = new BankService(repository, transferService, blockedAccounts);
+
         bank.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 150000));
         bank.openAccount(new DebitAccount(new AccountNumber("2222222222"), "Bob", 50000));
         bank.openAccount(new SavingsAccount(new AccountNumber("3333333333"), "Charlie", 200000, 10000));
@@ -26,7 +26,7 @@ public class PredicateCompositionDemo {
 
         blockedAccounts.block(new AccountNumber("2222222222"));
 
-        System.out.println("Композиция Predicate \n");
+        System.out.println("Композиция Predicate\n");
 
         Predicate<BankAccount> rich = account -> account.getBalance() >= 100_000;
         Predicate<BankAccount> notBlocked = account -> !blockedAccounts.isBlocked(account.getId());
@@ -34,31 +34,22 @@ public class PredicateCompositionDemo {
         Predicate<BankAccount> credit = CreditAccount.class::isInstance;
 
         System.out.println("1. Счета с балансом >= 100000:");
-        List<BankAccount> richAccounts = bank.findAccounts(rich);
-        printAccounts(richAccounts);
+        printAccounts(bank.findAccounts(rich));
 
         System.out.println("\n2. Незаблокированные счета:");
-        List<BankAccount> activeAccounts = bank.findAccounts(notBlocked);
-        printAccounts(activeAccounts);
+        printAccounts(bank.findAccounts(notBlocked));
 
         System.out.println("\n3. Только DebitAccount:");
-        List<BankAccount> debitAccounts = bank.findAccounts(debit);
-        printAccounts(debitAccounts);
+        printAccounts(bank.findAccounts(debit));
 
         System.out.println("\n4. Богатые И незаблокированные:");
-        Predicate<BankAccount> richAndActive = rich.and(notBlocked);
-        List<BankAccount> candidates = bank.findAccounts(richAndActive);
-        printAccounts(candidates);
+        printAccounts(bank.findAccounts(rich.and(notBlocked)));
 
-        System.out.println("\n5. Не DebitAccount (Savings + Credit):");
-        Predicate<BankAccount> notDebit = debit.negate();
-        List<BankAccount> nonDebitAccounts = bank.findAccounts(notDebit);
-        printAccounts(nonDebitAccounts);
+        System.out.println("\n5. Не DebitAccount:");
+        printAccounts(bank.findAccounts(debit.negate()));
 
         System.out.println("\n6. Богатые ИЛИ CreditAccount:");
-        Predicate<BankAccount> richOrCredit = rich.or(credit);
-        List<BankAccount> richOrCreditAccounts = bank.findAccounts(richOrCredit);
-        printAccounts(richOrCreditAccounts);
+        printAccounts(bank.findAccounts(rich.or(credit)));
     }
 
     private static void printAccounts(List<BankAccount> accounts) {

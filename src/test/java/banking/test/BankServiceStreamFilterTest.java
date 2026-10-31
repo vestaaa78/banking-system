@@ -16,7 +16,7 @@ class BankServiceStreamFilterTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
 
         bankService.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 150000));
         bankService.openAccount(new DebitAccount(new AccountNumber("2222222222"), "Bob", 50000));
@@ -82,7 +82,7 @@ class BankServiceStreamFilterTest {
     @Test
     void findDebitAccountsReturnsEmptyListWhenNoDebitAccounts() {
         Repository<AccountNumber, BankAccount> repo = new InMemoryRepository<>();
-        BankService service = new BankService(repo, null);
+        BankService service = new BankService(repo, null, null);
         service.openAccount(new SavingsAccount(new AccountNumber("1111111111"), "Alice", 5000, 1000));
         service.openAccount(new CreditAccount(new AccountNumber("2222222222"), "Bob", 3000, 10000));
 
@@ -140,7 +140,7 @@ class BankServiceStreamFilterTest {
     @Test
     void emptyRepositoryReturnsEmptyList() {
         Repository<AccountNumber, BankAccount> emptyRepo = new InMemoryRepository<>();
-        BankService emptyService = new BankService(emptyRepo, null);
+        BankService emptyService = new BankService(emptyRepo, null, null);
 
         assertTrue(emptyService.findRichAccounts(100_000).isEmpty());
         assertTrue(emptyService.findDebitAccounts().isEmpty());

@@ -16,7 +16,7 @@ class BankServiceStreamMapTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
 
         bankService.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 5000));
         bankService.openAccount(new SavingsAccount(new AccountNumber("2222222222"), "Bob", 10000, 1000));
@@ -89,7 +89,7 @@ class BankServiceStreamMapTest {
     @Test
     void getAccountSummariesReturnsEmptyListForEmptyRepository() {
         Repository<AccountNumber, BankAccount> emptyRepo = new InMemoryRepository<>();
-        BankService emptyService = new BankService(emptyRepo, null);
+        BankService emptyService = new BankService(emptyRepo, null, null);
 
         List<AccountSummary> summaries = emptyService.getAccountSummaries();
 

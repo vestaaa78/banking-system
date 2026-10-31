@@ -17,7 +17,7 @@ class BankServiceFindAccountsTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
     }
 
     @Test

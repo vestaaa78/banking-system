@@ -16,7 +16,7 @@ class BankServiceStreamSortedTest {
     @BeforeEach
     void setUp() {
         repository = new InMemoryRepository<>();
-        bankService = new BankService(repository, null);
+        bankService = new BankService(repository, null, null);
 
         bankService.openAccount(new DebitAccount(new AccountNumber("3333333333"), "Charlie", 5000));
         bankService.openAccount(new SavingsAccount(new AccountNumber("1111111111"), "Alice", 150000, 10000));
@@ -156,7 +156,7 @@ class BankServiceStreamSortedTest {
     @Test
     void sortingEmptyRepositoryReturnsEmptyList() {
         Repository<AccountNumber, BankAccount> emptyRepo = new InMemoryRepository<>();
-        BankService emptyService = new BankService(emptyRepo, null);
+        BankService emptyService = new BankService(emptyRepo, null, null);
 
         assertTrue(emptyService.richestFirst().isEmpty());
         assertTrue(emptyService.sortedByAccountNumber().isEmpty());
@@ -167,7 +167,7 @@ class BankServiceStreamSortedTest {
     @Test
     void sortingSingleElementReturnsSameElement() {
         Repository<AccountNumber, BankAccount> singleRepo = new InMemoryRepository<>();
-        BankService singleService = new BankService(singleRepo, null);
+        BankService singleService = new BankService(singleRepo, null, null);
         singleService.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 5000));
 
         assertEquals(1, singleService.richestFirst().size());

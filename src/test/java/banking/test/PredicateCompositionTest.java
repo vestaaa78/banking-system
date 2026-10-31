@@ -24,7 +24,7 @@ class PredicateCompositionTest {
                 blockedAccounts,
                 new TransactionJournal()
         );
-        bankService = new BankService(repository, transferService);
+        bankService = new BankService(repository, transferService, null);
 
         bankService.openAccount(new DebitAccount(new AccountNumber("1111111111"), "Alice", 150000));
         bankService.openAccount(new DebitAccount(new AccountNumber("2222222222"), "Bob", 50000));

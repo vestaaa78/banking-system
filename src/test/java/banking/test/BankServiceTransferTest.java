@@ -28,7 +28,7 @@ class BankServiceTransferTest {
                 new TransactionJournal()
         );
 
-        bankService = new BankService(repository, transferService);
+        bankService = new BankService(repository, transferService, blockedRegistry);
 
         num1 = new AccountNumber("1111111111");
         num2 = new AccountNumber("2222222222");

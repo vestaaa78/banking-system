@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class BankService {
+
     private final Repository<AccountNumber, BankAccount> accounts;
     private final TransferService transferService;
+    private final BlockedAccountRegistry blockedAccounts;
 
     public BankService(
             Repository<AccountNumber, BankAccount> accounts,
-            TransferService transferService
+            TransferService transferService,
+            BlockedAccountRegistry blockedAccounts
     ) {
         this.accounts = accounts;
         this.transferService = transferService;
+        this.blockedAccounts = blockedAccounts;
     }
 
     public void openAccount(BankAccount account) {
@@ -132,5 +136,20 @@ public class BankService {
                         .comparing(BankAccount::getOwner)
                         .thenComparing(account -> account.getId().value()))
                 .toList();
+    }
+    public boolean allAccountsPositive() {
+        return accounts.findAll().stream()
+                .allMatch(account -> account.getBalance() > 0);
+    }
+    public boolean noCreditAccounts() {
+        return accounts.findAll().stream()
+                .noneMatch(CreditAccount.class::isInstance);
+    }
+    public boolean hasBlockedAccounts(BlockedAccountRegistry blockedAccounts) {
+        if (blockedAccounts == null) {
+            throw new IllegalArgumentException("BlockedAccountRegistry cannot be null");
+        }
+        return accounts.findAll().stream()
+                .anyMatch(account -> blockedAccounts.isBlocked(account.getId()));
     }
 }
