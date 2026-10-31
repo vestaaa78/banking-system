@@ -41,4 +41,12 @@ public class TransactionJournal {
         }
         return index.findByAccount(number);
     }
+    public List<Transaction> findByAccountViaStream(AccountNumber number) {
+        if (number == null) {
+            throw new IllegalArgumentException("Account number cannot be null");
+        }
+        return transactions.stream()
+                .filter(tx -> tx.account().equals(number))
+                .toList();
+    }
 }

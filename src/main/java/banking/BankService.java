@@ -1,8 +1,6 @@
 package banking;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class BankService {
@@ -66,8 +64,10 @@ public class BankService {
         if (condition == null) {
             throw new IllegalArgumentException("Predicate cannot be null");
         }
-        List<BankAccount> allAccounts = accounts.findAll();
-        return CollectionFunctions.filter(allAccounts, condition);
+
+        return accounts.findAll().stream()
+                .filter(condition)
+                .toList();
     }
 
     private List<BankAccount> getAllAccounts() {
@@ -151,5 +151,24 @@ public class BankService {
         }
         return accounts.findAll().stream()
                 .anyMatch(account -> blockedAccounts.isBlocked(account.getId()));
+    }
+    public Optional<BankAccount> findFirstRichAccount(double minBalance) {
+        return accounts.findAll().stream()
+                .filter(a -> a.getBalance() >= minBalance)
+                .findFirst();
+    }
+    public double totalBalance() {
+        return accounts.findAll().stream()
+                .mapToDouble(BankAccount::getBalance)
+                .sum();
+    }
+    public OptionalDouble averageBalance() {
+        return accounts.findAll().stream()
+                .mapToDouble(BankAccount::getBalance)
+                .average();
+    }
+    public Optional<BankAccount> richestAccount() {
+        return accounts.findAll().stream()
+                .max(Comparator.comparingDouble(BankAccount::getBalance));
     }
 }
