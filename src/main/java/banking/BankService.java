@@ -95,4 +95,16 @@ public class BankService {
                 .filter(account -> account.getOwner().equals(owner))
                 .toList();
     }
+    public List<AccountSummary> getAccountSummaries() {
+        return accounts.findAll().stream()
+                .map(this::toSummary)
+                .toList();
+    }
+    private AccountSummary toSummary(BankAccount account) {
+        return new AccountSummary(
+                account.getId(),
+                account.getClass().getSimpleName(),
+                account.getBalance()
+        );
+    }
 }
