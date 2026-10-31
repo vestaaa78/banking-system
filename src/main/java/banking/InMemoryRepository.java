@@ -1,13 +1,12 @@
 package banking;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InMemoryRepository<ID, T extends Identifiable<ID>> implements Repository<ID, T> {
-
-    private final Map<ID, T> values = new HashMap<>();
+    private final Map<ID, T> values = new LinkedHashMap<>();
 
     @Override
     public void save(T value) {

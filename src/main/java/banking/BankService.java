@@ -80,4 +80,19 @@ public class BankService {
         result.sort(comparator);
         return result;
     }
+    public List<BankAccount> findRichAccounts(double minBalance) {
+        return accounts.findAll().stream()
+                .filter(account -> account.getBalance() >= minBalance)
+                .toList();
+    }
+    public List<BankAccount> findDebitAccounts() {
+        return accounts.findAll().stream()
+                .filter(DebitAccount.class::isInstance)
+                .toList();
+    }
+    public List<BankAccount> findAccountsByOwner(String owner) {
+        return accounts.findAll().stream()
+                .filter(account -> account.getOwner().equals(owner))
+                .toList();
+    }
 }
