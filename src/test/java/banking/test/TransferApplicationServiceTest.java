@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class TransferApplicationServiceTest {
 
     private static final AccountNumber NUM_FROM = new AccountNumber("1111111111");
@@ -15,14 +16,14 @@ class TransferApplicationServiceTest {
     private static final AccountNumber NUM_MISSING = new AccountNumber("9999999999");
 
     private TransferApplicationService service;
-    private Repository<AccountNumber, BankAccount> repository;
+    private AccountRepository repository;
     private BlockedAccountRegistry blockedAccounts;
     private BankAccount from;
     private BankAccount to;
 
     @BeforeEach
     void setUp() {
-        repository = new InMemoryRepository<>();
+        repository = new InMemoryAccountRepository();
         blockedAccounts = new BlockedAccountRegistry();
 
         TransferService transferService = new TransferService(
@@ -57,7 +58,6 @@ class TransferApplicationServiceTest {
         );
 
         assertTrue(exception.getMessage().contains("Source account not found"));
-
         assertEquals(2000, to.getBalance());
     }
 
@@ -82,7 +82,6 @@ class TransferApplicationServiceTest {
         );
 
         assertEquals("Source account is blocked", exception.getMessage());
-
         assertEquals(10000, from.getBalance());
         assertEquals(2000, to.getBalance());
     }

@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class AccountServiceTest {
 
     private AccountService accountService;
-    private Repository<AccountNumber, BankAccount> repository;
+    private AccountRepository repository;  // ← ИЗМЕНЕНО
     private AccountNumber num1;
     private AccountNumber num2;
 
     @BeforeEach
     void setUp() {
-        repository = new InMemoryRepository<>();
+        repository = new InMemoryAccountRepository();  // ← ИЗМЕНЕНО
         accountService = new AccountService(repository);
         num1 = new AccountNumber("1111111111");
         num2 = new AccountNumber("2222222222");
@@ -121,14 +121,12 @@ class AccountServiceTest {
 
     @Test
     void accountServiceDoesNotDependOnTransferService() {
-        AccountService standaloneService = new AccountService(new InMemoryRepository<>());
+        AccountService standalone = new AccountService(new InMemoryAccountRepository());  // ← ИСПРАВЛЕНО
         AccountNumber testNum = new AccountNumber("9999999999");
 
-        standaloneService.open(new DebitAccount(testNum, "Test", 5000));
-        Optional<BankAccount> found = standaloneService.find(testNum);
+        standalone.open(new DebitAccount(testNum, "Test", 5000));
 
-        assertTrue(found.isPresent());
-        assertEquals(5000, found.get().getBalance());
-
+        assertTrue(standalone.find(testNum).isPresent());
+        assertEquals(5000, standalone.find(testNum).get().getBalance());
     }
 }

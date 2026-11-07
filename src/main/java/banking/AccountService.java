@@ -4,11 +4,11 @@ import java.util.Optional;
 
 public class AccountService {
 
-    private final Repository<AccountNumber, BankAccount> accounts;
+    private final AccountRepository accounts;  // ← ЗАВИСИМОСТЬ ОТ АБСТРАКЦИИ
 
-    public AccountService(Repository<AccountNumber, BankAccount> accounts) {
+    public AccountService(AccountRepository accounts) {
         if (accounts == null) {
-            throw new IllegalArgumentException("Repository cannot be null");
+            throw new IllegalArgumentException("AccountRepository cannot be null");
         }
         this.accounts = accounts;
     }
@@ -24,7 +24,7 @@ public class AccountService {
         if (number == null) {
             throw new IllegalArgumentException("Account number cannot be null");
         }
-        return Optional.ofNullable(accounts.findById(number));
+        return accounts.findById(number);
     }
 
     public boolean close(AccountNumber number) {
