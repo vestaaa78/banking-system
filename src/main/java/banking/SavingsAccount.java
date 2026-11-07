@@ -12,6 +12,10 @@ public class SavingsAccount extends BankAccount {
         this.minimumBalance = minimumBalance;
     }
 
+    public double getMinimumBalance() {
+        return minimumBalance;
+    }
+
     @Override
     protected double getAvailableAmount() {
         return Math.max(0, getBalance() - minimumBalance);
