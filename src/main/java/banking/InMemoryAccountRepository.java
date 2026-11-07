@@ -8,22 +8,22 @@ import java.util.Optional;
 
 public class InMemoryAccountRepository implements AccountRepository {
 
-    private final Map<AccountNumber, BankAccount> storage = new HashMap<>();
-
-    @Override
-    public void save(BankAccount account) {
-        if (account == null) {
-            throw new IllegalArgumentException("Account cannot be null");
-        }
-        storage.put(account.getId(), account);
-    }
+    private final Map<AccountNumber, BankAccount> data = new HashMap<>();
 
     @Override
     public Optional<BankAccount> findById(AccountNumber number) {
         if (number == null) {
             throw new IllegalArgumentException("Account number cannot be null");
         }
-        return Optional.ofNullable(storage.get(number));
+        return Optional.ofNullable(data.get(number));
+    }
+
+    @Override
+    public void save(BankAccount account) {
+        if (account == null) {
+            throw new IllegalArgumentException("Account cannot be null");
+        }
+        data.put(account.getId(), account);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class InMemoryAccountRepository implements AccountRepository {
         if (number == null) {
             return false;
         }
-        return storage.containsKey(number);
+        return data.containsKey(number);
     }
 
     @Override
@@ -39,16 +39,16 @@ public class InMemoryAccountRepository implements AccountRepository {
         if (number == null) {
             return false;
         }
-        return storage.remove(number) != null;
+        return data.remove(number) != null;
     }
 
     @Override
     public List<BankAccount> findAll() {
-        return new ArrayList<>(storage.values());
+        return new ArrayList<>(data.values());
     }
 
     @Override
     public int size() {
-        return storage.size();
+        return data.size();
     }
 }
