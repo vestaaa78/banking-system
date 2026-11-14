@@ -2,7 +2,8 @@ package banking.application;
 
 import banking.domain.*;
 import banking.ports.NotificationService;
-
+import banking.annotation.Audited;
+@Audited
 public class TransferService {
 
     private static final double TRANSFER_LIMIT = 50_000;

@@ -3,7 +3,7 @@ package banking.application;
 import banking.domain.AccountNumber;
 import banking.domain.BankAccount;
 import banking.ports.AccountRepository;
-
+import banking.annotation.RequiresRole;
 import java.util.Optional;
 
 public class AccountService {
@@ -30,7 +30,7 @@ public class AccountService {
         }
         return accounts.findById(number);
     }
-
+    @RequiresRole("ADMIN")
     public boolean close(AccountNumber number) {
         if (number == null) {
             throw new IllegalArgumentException("Account number cannot be null");

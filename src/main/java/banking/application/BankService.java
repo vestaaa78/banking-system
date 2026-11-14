@@ -1,5 +1,6 @@
 package banking.application;
 
+import banking.annotation.RequiresRole;
 import banking.domain.*;
 import banking.ports.Repository;
 
@@ -35,7 +36,7 @@ public class BankService {
         }
         return accounts.findById(number);
     }
-
+    @RequiresRole("ADMIN")
     public boolean closeAccount(AccountNumber number) {
         if (number == null) {
             throw new IllegalArgumentException("Account number cannot be null");
