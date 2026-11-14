@@ -1,5 +1,6 @@
 package banking.test;
 
+import banking.dto.RateDto;
 import banking.export.ExternalRatesClient;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
@@ -20,38 +21,58 @@ class ExternalRatesClientTest {
 
     @BeforeEach
     void setUp() throws IOException {
+
         server = HttpServer.create(
-                new InetSocketAddress("localhost", 0), 0
+                new InetSocketAddress("localhost", 0),
+                0
         );
 
-        server.createContext("/success", exchange -> {
-            byte[] body = "Rates loaded successfully"
-                    .getBytes(StandardCharsets.UTF_8);
+        server.createContext("/rate", exchange -> {
+
+            String json = """
+                    {
+                        "currency": "USD",
+                        "value": 92.5
+                    }
+                    """;
+
+            byte[] body = json.getBytes(StandardCharsets.UTF_8);
+
+            exchange.getResponseHeaders().set(
+                    "Content-Type",
+                    "application/json"
+            );
 
             exchange.sendResponseHeaders(200, body.length);
+
             exchange.getResponseBody().write(body);
+
             exchange.close();
         });
 
         server.createContext("/error", exchange -> {
+
             byte[] body = "Not found"
                     .getBytes(StandardCharsets.UTF_8);
 
             exchange.sendResponseHeaders(404, body.length);
+
             exchange.getResponseBody().write(body);
+
             exchange.close();
         });
 
         server.start();
 
-        baseUrl = "http://localhost:" +
-                server.getAddress().getPort();
+        baseUrl = "http://localhost:"
+                + server.getAddress().getPort();
 
         client = new ExternalRatesClient();
     }
 
     @AfterEach
     void tearDown() {
+
         if (server != null) {
             server.stop(0);
         }
@@ -61,9 +82,23 @@ class ExternalRatesClientTest {
     void shouldReturnResponseBodyForSuccessfulRequest()
             throws IOException, InterruptedException {
 
-        String result = client.get(baseUrl + "/success");
+        String result = client.get(baseUrl + "/rate");
 
-        assertEquals("Rates loaded successfully", result);
+        assertTrue(result.contains("USD"));
+        assertTrue(result.contains("92.5"));
+    }
+
+    @Test
+    void shouldConvertJsonToRateDto()
+            throws IOException, InterruptedException {
+
+        RateDto rate = client.getRate(baseUrl + "/rate");
+
+        assertNotNull(rate);
+
+        assertEquals("USD", rate.currency());
+
+        assertEquals(92.5, rate.value());
     }
 
     @Test
@@ -71,9 +106,12 @@ class ExternalRatesClientTest {
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> client.get(baseUrl + "/error")
+                () -> client.getRate(baseUrl + "/error")
         );
 
-        assertEquals("HTTP error: 404", exception.getMessage());
+        assertEquals(
+                "HTTP error: 404",
+                exception.getMessage()
+        );
     }
 }
