@@ -1,5 +1,6 @@
 package banking.test;
-import banking.*;
+import banking.application.CollectionFunctions;
+import banking.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

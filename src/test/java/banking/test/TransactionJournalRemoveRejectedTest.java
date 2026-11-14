@@ -1,6 +1,10 @@
 package banking.test;
 
-import banking.*;
+import banking.application.TransactionJournal;
+import banking.domain.AccountNumber;
+import banking.domain.Transaction;
+import banking.domain.TransactionStatus;
+import banking.domain.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

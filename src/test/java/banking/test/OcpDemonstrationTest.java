@@ -1,6 +1,16 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.ConsoleNotificationService;
+import banking.adapters.FixedCommissionPolicy;
+import banking.adapters.ProgressiveCommissionPolicy;
+import banking.adapters.WeekendCommissionPolicy;
+import banking.application.BlockedAccountRegistry;
+import banking.application.TransactionJournal;
+import banking.domain.AccountNumber;
+import banking.domain.BankAccount;
+import banking.domain.CommissionPolicy;
+import banking.domain.DebitAccount;
+import banking.application.TransferService;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

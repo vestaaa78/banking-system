@@ -1,6 +1,6 @@
 package banking.test;
 
-import banking.AccountNumber;
+import banking.domain.AccountNumber;
 import banking.Pair;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

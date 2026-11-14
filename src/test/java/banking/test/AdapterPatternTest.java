@@ -1,6 +1,15 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.*;
+import banking.application.AccountService;
+import banking.application.BlockedAccountRegistry;
+import banking.application.TransactionJournal;
+import banking.domain.AccountNumber;
+import banking.domain.BankAccount;
+import banking.domain.DebitAccount;
+import banking.ports.AccountRepository;
+import banking.ports.NotificationService;
+import banking.application.TransferService;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;

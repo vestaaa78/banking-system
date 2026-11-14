@@ -1,6 +1,9 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.InMemoryRepository;
+import banking.application.BankService;
+import banking.domain.*;
+import banking.ports.Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

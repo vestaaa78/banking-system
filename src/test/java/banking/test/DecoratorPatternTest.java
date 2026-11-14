@@ -1,6 +1,7 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.*;
+import banking.ports.NotificationService;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;

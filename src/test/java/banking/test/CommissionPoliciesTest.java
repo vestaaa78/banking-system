@@ -1,9 +1,9 @@
 package banking.test;
 
-import banking.CommissionPolicy;
-import banking.FixedCommissionPolicy;
-import banking.ProgressiveCommissionPolicy;
-import banking.WeekendCommissionPolicy;
+import banking.domain.CommissionPolicy;
+import banking.adapters.FixedCommissionPolicy;
+import banking.adapters.ProgressiveCommissionPolicy;
+import banking.adapters.WeekendCommissionPolicy;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

@@ -1,9 +1,9 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.Transaction;
-import banking.TransactionStatus;
-import banking.TransactionType;
+import banking.domain.AccountNumber;
+import banking.domain.Transaction;
+import banking.domain.TransactionStatus;
+import banking.domain.TransactionType;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,9 +1,9 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.BankAccount;
-import banking.DebitAccount;
-import banking.SavingsAccount;
+import banking.domain.AccountNumber;
+import banking.domain.BankAccount;
+import banking.domain.DebitAccount;
+import banking.domain.SavingsAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

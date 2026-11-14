@@ -1,6 +1,12 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.ConsoleNotificationService;
+import banking.adapters.FakeNotificationService;
+import banking.adapters.NoCommission;
+import banking.application.BlockedAccountRegistry;
+import banking.application.TransactionJournal;
+import banking.domain.*;
+import banking.application.TransferService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

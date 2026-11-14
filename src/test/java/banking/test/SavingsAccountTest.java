@@ -1,9 +1,9 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.InsufficientFundsException;
-import banking.InvalidAmountException;
-import banking.SavingsAccount;
+import banking.domain.AccountNumber;
+import banking.domain.InsufficientFundsException;
+import banking.domain.InvalidAmountException;
+import banking.domain.SavingsAccount;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

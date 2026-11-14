@@ -1,6 +1,6 @@
 package banking.test;
 
-import banking.*;
+import banking.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

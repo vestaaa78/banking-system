@@ -1,6 +1,14 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.ConsoleNotificationService;
+import banking.adapters.InMemoryRepository;
+import banking.adapters.NoCommission;
+import banking.application.BankService;
+import banking.application.BlockedAccountRegistry;
+import banking.application.TransactionJournal;
+import banking.domain.*;
+import banking.ports.Repository;
+import banking.application.TransferService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

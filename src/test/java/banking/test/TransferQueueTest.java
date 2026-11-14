@@ -1,8 +1,8 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.TransferQueue;
-import banking.TransferRequest;
+import banking.domain.AccountNumber;
+import banking.adapters.TransferQueue;
+import banking.domain.TransferRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

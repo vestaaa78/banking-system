@@ -1,9 +1,9 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.BankAccount;
-import banking.CreditAccount;
-import banking.DebitAccount;
+import banking.domain.AccountNumber;
+import banking.domain.BankAccount;
+import banking.domain.CreditAccount;
+import banking.domain.DebitAccount;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

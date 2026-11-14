@@ -1,6 +1,11 @@
 package banking.test;
 
-import banking.*;
+import banking.adapters.InMemoryRepository;
+import banking.domain.AccountNumber;
+import banking.domain.BankAccount;
+import banking.domain.DebitAccount;
+import banking.domain.SavingsAccount;
+import banking.ports.Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

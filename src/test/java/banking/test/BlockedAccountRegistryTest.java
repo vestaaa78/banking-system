@@ -1,7 +1,7 @@
 package banking.test;
 
-import banking.AccountNumber;
-import banking.BlockedAccountRegistry;
+import banking.domain.AccountNumber;
+import banking.application.BlockedAccountRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
