@@ -52,5 +52,42 @@ class JsonStorageTest {
         assertTrue(content.contains("2222222222"));
         assertTrue(content.contains("Petr Petrov"));
     }
+    @Test
+    void shouldLoadAccountsFromJsonFile() throws IOException {
+
+        List<AccountDto> accounts = List.of(
+                new AccountDto(
+                        "1111111111",
+                        "Ivan Ivanov",
+                        15000.0,
+                        "DebitAccount"
+                ),
+                new AccountDto(
+                        "2222222222",
+                        "Petr Petrov",
+                        25000.0,
+                        "CreditAccount"
+                )
+        );
+
+        Path file = tempDir.resolve("accounts.json");
+
+        JsonStorage storage = new JsonStorage();
+        storage.saveAccounts(file, accounts);
+
+        List<AccountDto> loadedAccounts = storage.loadAccounts(file);
+
+        assertEquals(2, loadedAccounts.size());
+
+        assertEquals("1111111111", loadedAccounts.get(0).number());
+        assertEquals("Ivan Ivanov", loadedAccounts.get(0).owner());
+        assertEquals(15000.0, loadedAccounts.get(0).balance());
+        assertEquals("DebitAccount", loadedAccounts.get(0).type());
+
+        assertEquals("2222222222", loadedAccounts.get(1).number());
+        assertEquals("Petr Petrov", loadedAccounts.get(1).owner());
+        assertEquals(25000.0, loadedAccounts.get(1).balance());
+        assertEquals("CreditAccount", loadedAccounts.get(1).type());
+    }
 }
 
