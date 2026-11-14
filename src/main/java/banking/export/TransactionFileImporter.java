@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class TransactionFileImporter {
 
@@ -18,7 +19,10 @@ public class TransactionFileImporter {
 
         Objects.requireNonNull(path, "Path cannot be null");
 
-        List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+        List<String> lines = Files.readAllLines(
+                path,
+                StandardCharsets.UTF_8
+        );
 
         List<TransactionDto> transactions = new ArrayList<>();
 
@@ -66,6 +70,7 @@ public class TransactionFileImporter {
                 transactions.add(dto);
 
             } catch (NumberFormatException e) {
+
                 throw new IllegalArgumentException(
                         "Invalid number at line " + (i + 1)
                                 + ": " + line,
@@ -73,14 +78,27 @@ public class TransactionFileImporter {
                 );
 
             } catch (IllegalArgumentException e) {
+
                 throw new IllegalArgumentException(
-                        "Invalid transaction data at line " + (i + 1)
-                                + ": " + line,
+                        "Invalid transaction data at line "
+                                + (i + 1) + ": " + line,
                         e
                 );
             }
         }
 
         return transactions;
+    }
+
+    public long countSuccessful(Path path) throws IOException {
+
+        Objects.requireNonNull(path, "Path cannot be null");
+
+        try (Stream<String> lines = Files.lines(path)) {
+
+            return lines
+                    .filter(line -> line.contains("SUCCESS"))
+                    .count();
+        }
     }
 }

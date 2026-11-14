@@ -94,4 +94,29 @@ class TransactionFileImporterTest {
 
         assertTrue(exception.getMessage().contains("line 2"));
     }
+
+    @Test
+    void shouldCountSuccessfulTransactionsWithoutLoadingAllLines()
+            throws IOException {
+
+        Path file = tempDir.resolve("statistics.txt");
+
+        List<String> lines = List.of(
+                "id;from;to;amount;status",
+                "1;1111111111;2222222222;1000.0;SUCCESS",
+                "2;3333333333;4444444444;500.0;FAILED",
+                "3;5555555555;6666666666;200.0;SUCCESS",
+                "4;7777777777;8888888888;300.0;REJECTED",
+                "5;9999999999;0000000000;400.0;SUCCESS"
+        );
+
+        Files.write(file, lines, StandardCharsets.UTF_8);
+
+        TransactionFileImporter importer =
+                new TransactionFileImporter();
+
+        long count = importer.countSuccessful(file);
+
+        assertEquals(3L, count);
+    }
 }
