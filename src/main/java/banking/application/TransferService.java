@@ -55,6 +55,7 @@ public class TransferService {
                 transactionCounter,
                 TransactionType.TRANSFER,
                 from.getNumber(),
+                to.getNumber(),
                 amount,
                 TransactionStatus.SUCCESS
         ));
