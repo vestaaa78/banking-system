@@ -1,17 +1,8 @@
 package banking.ports;
 
-import banking.domain.AccountNumber;
-import banking.domain.BankAccount;
-
-import java.util.List;
-import java.util.Optional;
-
-public interface AccountRepository {
-
-    void save(BankAccount account);
-    Optional<BankAccount> findById(AccountNumber number);
-    boolean existsById(AccountNumber number);
-    boolean deleteById(AccountNumber number);
-    List<BankAccount> findAll();
-    int size();
+public interface AccountRepository extends
+        AccountReader,
+        AccountWriter,
+        AccountDeleter,
+        AccountCatalog {
 }
