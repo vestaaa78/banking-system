@@ -2,8 +2,7 @@ package banking.application;
 
 import banking.domain.*;
 import banking.ports.NotificationService;
-import banking.annotation.Audited;
-@Audited
+
 public class TransferService {
 
     private static final double TRANSFER_LIMIT = 50_000;
@@ -27,7 +26,7 @@ public class TransferService {
         this.journal = journal;
     }
 
-    public synchronized void transfer(BankAccount from, BankAccount to, double amount) {
+    public void transfer(BankAccount from, BankAccount to, double amount) {
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
@@ -48,7 +47,6 @@ public class TransferService {
         double totalDebit = amount + commission;
 
         from.withdraw(totalDebit);
-
         to.deposit(amount);
 
         transactionCounter++;

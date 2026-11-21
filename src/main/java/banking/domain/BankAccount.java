@@ -17,21 +17,31 @@ public abstract class BankAccount implements Identifiable<AccountNumber> {
         this.balance = initialBalance;
     }
 
+    public synchronized double getBalance() {
+        return balance;
+    }
+
     public void deposit(double amount) {
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
-        increaseBalance(amount);
+        synchronized (this) {
+            increaseBalance(amount);
+        }
     }
 
-    protected void increaseBalance(double amount) {
-        balance += amount;
-    }
-
-    public abstract void withdraw(double amount);
-
-    public double getBalance() {
-        return balance;
+    public void withdraw(double amount) {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Amount must be positive");
+        }
+        synchronized (this) {
+            if (amount > getAvailableAmount()) {
+                throw new InsufficientFundsException(
+                        "Insufficient funds. Available: " + getAvailableAmount() + ", requested: " + amount
+                );
+            }
+            decreaseBalance(amount);
+        }
     }
 
     public AccountNumber getNumber() {
@@ -42,12 +52,21 @@ public abstract class BankAccount implements Identifiable<AccountNumber> {
         return owner;
     }
 
-    protected void setBalance(double balance) {
-        this.balance = balance;
+    protected void increaseBalance(double amount) {
+        balance += amount;
     }
 
-    protected boolean isValidAmount(double amount) {
-        return amount > 0;
+    protected void decreaseBalance(double amount) {
+        balance -= amount;
+    }
+
+    protected double getAvailableAmount() {
+        return balance;
+    }
+
+    @Override
+    public AccountNumber getId() {
+        return number;
     }
 
     @Override
@@ -65,23 +84,10 @@ public abstract class BankAccount implements Identifiable<AccountNumber> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{\n" +
-                " number=" + number.value() + ",\n" +
-                " owner='" + owner + "',\n" +
-                " balance=" + balance + "\n" +
-                "}";
-    }
-
-    protected double getAvailableAmount() {
-        return balance;
-    }
-
-    @Override
-    public AccountNumber getId() {
-        return number; // или return getNumber();
-    }
-
-    protected void decreaseBalance(double amount) {
-        balance -= amount;
+        return getClass().getSimpleName() + "{" +
+                " number=" + number.value() +
+                ", owner='" + owner + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }
