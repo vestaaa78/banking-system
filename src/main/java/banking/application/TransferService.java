@@ -27,7 +27,7 @@ public class TransferService {
         this.journal = journal;
     }
 
-    public void transfer(BankAccount from, BankAccount to, double amount) {
+    public synchronized void transfer(BankAccount from, BankAccount to, double amount) {
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
