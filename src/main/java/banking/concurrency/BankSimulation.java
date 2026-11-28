@@ -15,44 +15,44 @@ import java.util.List;
 
 public class BankSimulation {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         List<BankAccount> accounts = new ArrayList<>();
 
         accounts.add(new DebitAccount(
                 new AccountNumber("1000000001"),
                 "Client A",
-                100000
+                100_000
         ));
 
         accounts.add(new DebitAccount(
                 new AccountNumber("1000000002"),
                 "Client B",
-                100000
+                100_000
         ));
 
         accounts.add(new DebitAccount(
                 new AccountNumber("1000000003"),
                 "Client C",
-                100000
+                100_000
         ));
 
         accounts.add(new DebitAccount(
                 new AccountNumber("1000000004"),
                 "Client D",
-                100000
+                100_000
         ));
 
         accounts.add(new DebitAccount(
                 new AccountNumber("1000000005"),
                 "Client E",
-                100000
+                100_000
         ));
 
         double initialTotal = calculateTotalBalance(accounts);
 
         System.out.println("=== BANK SIMULATION ===");
-        System.out.println("Initial total: " + initialTotal);
+        System.out.printf("Initial total: %.2f%n", initialTotal);
 
         CommissionPolicy commissionPolicy = amount -> 0.0;
 
@@ -75,7 +75,7 @@ public class BankSimulation {
         List<Thread> clientThreads = new ArrayList<>();
 
         int clientsCount = 5;
-        int operationsPerClient = 1000;
+        int operationsPerClient = 10_000;
 
         for (int i = 1; i <= clientsCount; i++) {
 
@@ -102,12 +102,23 @@ public class BankSimulation {
                 1000
         );
 
-        Thread monitorThread = new Thread(
+        Thread bankMonitorThread = new Thread(
                 bankMonitor,
                 "Bank-Monitor"
         );
 
-        monitorThread.start();
+        StatisticsMonitor statisticsMonitor = new StatisticsMonitor(
+                clients,
+                1000
+        );
+
+        Thread statisticsThread = new Thread(
+                statisticsMonitor,
+                "Statistics-Monitor"
+        );
+
+        bankMonitorThread.start();
+        statisticsThread.start();
 
         for (Thread thread : clientThreads) {
             thread.start();
@@ -115,32 +126,22 @@ public class BankSimulation {
 
         System.out.println("All client threads started.");
 
-        try {
-            for (Thread thread : clientThreads) {
-                thread.join();
-            }
-
-            System.out.println("All clients have finished.");
-
-        } catch (InterruptedException exception) {
-            System.out.println("Main thread was interrupted.");
-
-            for (Thread thread : clientThreads) {
-                thread.interrupt();
-            }
-
-            Thread.currentThread().interrupt();
+        for (Thread thread : clientThreads) {
+            thread.join();
         }
+
+        System.out.println("All clients have finished.");
 
         bankMonitor.stop();
-        monitorThread.interrupt();
+        statisticsMonitor.stop();
 
-        try {
-            monitorThread.join();
-        } catch (InterruptedException exception) {
-            System.out.println("Main thread was interrupted while waiting for monitor.");
-            Thread.currentThread().interrupt();
-        }
+        bankMonitorThread.interrupt();
+        statisticsThread.interrupt();
+
+        bankMonitorThread.join();
+        statisticsThread.join();
+
+        System.out.println("All monitor threads have finished.");
 
         System.out.println();
         System.out.println("=== FINAL BALANCES ===");
@@ -171,9 +172,17 @@ public class BankSimulation {
         System.out.printf("Initial total: %.2f%n", initialTotal);
         System.out.printf("Final total: %.2f%n", finalTotal);
 
-        System.out.println("Successful transfers: " + successfulTransfers);
-        System.out.println("Failed transfers: " + failedTransfers);
-        System.out.println("Total attempts: " + totalAttempts);
+        System.out.println(
+                "Successful transfers: " + successfulTransfers
+        );
+
+        System.out.println(
+                "Failed transfers: " + failedTransfers
+        );
+
+        System.out.println(
+                "Total attempts: " + totalAttempts
+        );
 
         if (Math.abs(initialTotal - finalTotal) < 0.001) {
             System.out.println("Bank invariant: OK");
@@ -187,7 +196,23 @@ public class BankSimulation {
             System.out.println("Statistics invariant: ERROR");
         }
 
-        System.out.println("All workers stopped.");
+        boolean allWorkersStopped = true;
+
+        for (Thread thread : clientThreads) {
+            if (thread.isAlive()) {
+                allWorkersStopped = false;
+            }
+        }
+
+        if (bankMonitorThread.isAlive() || statisticsThread.isAlive()) {
+            allWorkersStopped = false;
+        }
+
+        if (allWorkersStopped) {
+            System.out.println("All workers stopped.");
+        } else {
+            System.out.println("Some workers are still running.");
+        }
     }
 
     private static double calculateTotalBalance(
