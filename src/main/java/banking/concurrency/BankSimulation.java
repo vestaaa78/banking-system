@@ -11,11 +11,17 @@ import banking.domain.DebitAccount;
 import banking.ports.NotificationService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class BankSimulation {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         List<BankAccount> accounts = new ArrayList<>();
 
@@ -51,8 +57,17 @@ public class BankSimulation {
 
         double initialTotal = calculateTotalBalance(accounts);
 
-        System.out.println("=== BANK SIMULATION ===");
+        System.out.println("=== BANK SIMULATION 2.0 ===");
         System.out.printf("Initial total: %.2f%n", initialTotal);
+
+        Map<String, BankAccount> accountMap = new HashMap<>();
+
+        for (BankAccount account : accounts) {
+            accountMap.put(
+                    account.getNumber().value(),
+                    account
+            );
+        }
 
         CommissionPolicy commissionPolicy = amount -> 0.0;
 
@@ -71,77 +86,66 @@ public class BankSimulation {
                 journal
         );
 
-        List<BankClient> clients = new ArrayList<>();
-        List<Thread> clientThreads = new ArrayList<>();
+        ExecutorService executor =
+                Executors.newFixedThreadPool(4);
 
-        int clientsCount = 5;
-        int operationsPerClient = 10_000;
+        TransferDispatcher dispatcher = new TransferDispatcher(
+                executor,
+                transferService,
+                accountMap
+        );
 
-        for (int i = 1; i <= clientsCount; i++) {
+        List<TransferRequest> requests = createRequests(1000);
 
-            BankClient client = new BankClient(
-                    "Client " + i,
-                    accounts,
-                    transferService,
-                    operationsPerClient
+        System.out.println("Created requests: " + requests.size());
+
+        for (TransferRequest request : requests) {
+            dispatcher.dispatch(request);
+        }
+
+        System.out.println("All requests were sent to dispatcher.");
+
+        executor.shutdown();
+
+        try {
+            while (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                System.out.println("Waiting for tasks to finish...");
+            }
+
+        } catch (InterruptedException exception) {
+
+            executor.shutdownNow();
+
+            Thread.currentThread().interrupt();
+
+            throw new RuntimeException(
+                    "Main thread was interrupted",
+                    exception
             );
-
-            clients.add(client);
-
-            Thread clientThread = new Thread(
-                    client,
-                    "Client-Thread-" + i
-            );
-
-            clientThreads.add(clientThread);
         }
 
-        BankMonitor bankMonitor = new BankMonitor(
-                accounts,
-                initialTotal,
-                1000
+        System.out.println();
+        System.out.println("=== DISPATCHER STATISTICS ===");
+
+        System.out.println(
+                "Received requests: "
+                        + dispatcher.getReceivedRequests()
         );
 
-        Thread bankMonitorThread = new Thread(
-                bankMonitor,
-                "Bank-Monitor"
+        System.out.println(
+                "Submitted requests: "
+                        + dispatcher.getSubmittedRequests()
         );
 
-        StatisticsMonitor statisticsMonitor = new StatisticsMonitor(
-                clients,
-                1000
+        System.out.println(
+                "Completed requests: "
+                        + dispatcher.getCompletedRequests()
         );
 
-        Thread statisticsThread = new Thread(
-                statisticsMonitor,
-                "Statistics-Monitor"
+        System.out.println(
+                "Failed requests: "
+                        + dispatcher.getFailedRequests()
         );
-
-        bankMonitorThread.start();
-        statisticsThread.start();
-
-        for (Thread thread : clientThreads) {
-            thread.start();
-        }
-
-        System.out.println("All client threads started.");
-
-        for (Thread thread : clientThreads) {
-            thread.join();
-        }
-
-        System.out.println("All clients have finished.");
-
-        bankMonitor.stop();
-        statisticsMonitor.stop();
-
-        bankMonitorThread.interrupt();
-        statisticsThread.interrupt();
-
-        bankMonitorThread.join();
-        statisticsThread.join();
-
-        System.out.println("All monitor threads have finished.");
 
         System.out.println();
         System.out.println("=== FINAL BALANCES ===");
@@ -156,33 +160,11 @@ public class BankSimulation {
 
         double finalTotal = calculateTotalBalance(accounts);
 
-        int successfulTransfers = 0;
-        int failedTransfers = 0;
-        int totalAttempts = 0;
-
-        for (BankClient client : clients) {
-            successfulTransfers += client.getSuccessfulTransfers();
-            failedTransfers += client.getFailedTransfers();
-            totalAttempts += client.getTotalAttempts();
-        }
-
         System.out.println();
         System.out.println("=== FINAL REPORT ===");
 
         System.out.printf("Initial total: %.2f%n", initialTotal);
         System.out.printf("Final total: %.2f%n", finalTotal);
-
-        System.out.println(
-                "Successful transfers: " + successfulTransfers
-        );
-
-        System.out.println(
-                "Failed transfers: " + failedTransfers
-        );
-
-        System.out.println(
-                "Total attempts: " + totalAttempts
-        );
 
         if (Math.abs(initialTotal - finalTotal) < 0.001) {
             System.out.println("Bank invariant: OK");
@@ -190,29 +172,84 @@ public class BankSimulation {
             System.out.println("Bank invariant: ERROR");
         }
 
-        if (successfulTransfers + failedTransfers == totalAttempts) {
-            System.out.println("Statistics invariant: OK");
-        } else {
-            System.out.println("Statistics invariant: ERROR");
-        }
+        System.out.println("Executor terminated: " + executor.isTerminated());
+        System.out.println("All requests processed.");
+    }
 
-        boolean allWorkersStopped = true;
+    private static List<TransferRequest> createRequests(int count) {
 
-        for (Thread thread : clientThreads) {
-            if (thread.isAlive()) {
-                allWorkersStopped = false;
+        List<TransferRequest> requests = new ArrayList<>();
+
+        Random random = new Random();
+
+        String[] accountNumbers = {
+                "1000000001",
+                "1000000002",
+                "1000000003",
+                "1000000004",
+                "1000000005"
+        };
+
+        for (int i = 1; i <= count; i++) {
+
+            String from;
+            String to;
+            double amount;
+
+            if (i % 25 == 0) {
+
+                from = "9999999999";
+                to = "1000000002";
+                amount = 500;
+
             }
+            else if (i % 20 == 0) {
+
+                from = "1000000001";
+                to = "1000000002";
+                amount = -100;
+
+            }
+            else if (i % 30 == 0) {
+
+                from = "1000000001";
+                to = "1000000002";
+                amount = 60_000;
+
+            }
+            else if (i % 10 == 0) {
+
+                from = "1000000001";
+                to = "1000000002";
+                amount = 250;
+
+            }
+            else {
+
+                int fromIndex = random.nextInt(accountNumbers.length);
+                int toIndex;
+
+                do {
+                    toIndex = random.nextInt(accountNumbers.length);
+                } while (fromIndex == toIndex);
+
+                from = accountNumbers[fromIndex];
+                to = accountNumbers[toIndex];
+
+                amount = 100 + random.nextInt(900);
+            }
+
+            requests.add(
+                    new TransferRequest(
+                            i,
+                            from,
+                            to,
+                            amount
+                    )
+            );
         }
 
-        if (bankMonitorThread.isAlive() || statisticsThread.isAlive()) {
-            allWorkersStopped = false;
-        }
-
-        if (allWorkersStopped) {
-            System.out.println("All workers stopped.");
-        } else {
-            System.out.println("Some workers are still running.");
-        }
+        return requests;
     }
 
     private static double calculateTotalBalance(

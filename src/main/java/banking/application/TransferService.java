@@ -51,7 +51,18 @@ public class TransferService {
 
 
     public void transfer(BankAccount from, BankAccount to, double amount) {
+        synchronized (journal) {
+            transactionCounter++;
 
+            journal.add(new Transaction(
+                    transactionCounter,
+                    TransactionType.TRANSFER,
+                    from.getNumber(),
+                    to.getNumber(),
+                    amount,
+                    TransactionStatus.SUCCESS
+            ));
+        }
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
