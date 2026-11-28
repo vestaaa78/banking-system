@@ -7,15 +7,17 @@ public class DebitAccount extends BankAccount {
     }
 
     @Override
-    public void withdraw(double amount) {
+    public synchronized void withdraw(double amount) {
+
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
-        if (amount > getAvailableAmount()) {
-            throw new InsufficientFundsException(
-                    "Insufficient funds. Available: " + getAvailableAmount() + ", requested: " + amount
-            );
+
+        if (getBalance() < amount) {
+            throw new InsufficientFundsException("Insufficient funds");
         }
+
         decreaseBalance(amount);
     }
+
 }

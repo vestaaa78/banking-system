@@ -13,12 +13,12 @@ public class CreditAccount extends BankAccount {
     }
 
     @Override
-    protected double getAvailableAmount() {
+    protected synchronized double getAvailableAmount() {
         return getBalance() + creditLimit;
     }
 
     @Override
-    public void withdraw(double amount) {
+    public synchronized void withdraw(double amount) {
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }

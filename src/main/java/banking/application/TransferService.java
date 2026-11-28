@@ -26,13 +26,40 @@ public class TransferService {
         this.journal = journal;
     }
 
+    private void executeTransfer(
+            BankAccount from,
+            BankAccount to,
+            double totalDebit,
+            double amount
+    ) {
+        from.withdraw(totalDebit);
+        to.deposit(amount);
+
+        synchronized (journal) {
+            transactionCounter++;
+
+            journal.add(new Transaction(
+                    transactionCounter,
+                    TransactionType.TRANSFER,
+                    from.getNumber(),
+                    to.getNumber(),
+                    amount,
+                    TransactionStatus.SUCCESS
+            ));
+        }
+    }
+
+
     public void transfer(BankAccount from, BankAccount to, double amount) {
+
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
         }
 
         if (from.equals(to)) {
-            throw new IllegalArgumentException("Cannot transfer to the same account");
+            throw new IllegalArgumentException(
+                    "Cannot transfer to the same account"
+            );
         }
 
         if (blockedAccounts.isBlocked(from.getNumber())) {
@@ -40,7 +67,9 @@ public class TransferService {
         }
 
         if (amount > TRANSFER_LIMIT) {
-            throw new TransferLimitExceededException("Transfer limit exceeded: " + amount);
+            throw new TransferLimitExceededException(
+                    "Transfer limit exceeded: " + amount
+            );
         }
 
         double commission = commissionPolicy.calculate(amount);
@@ -49,30 +78,32 @@ public class TransferService {
         BankAccount firstLock;
         BankAccount secondLock;
 
-        if (from.getNumber().value().compareTo(to.getNumber().value()) < 0) {
+        if (from.getNumber().value().compareTo(
+                to.getNumber().value()
+        ) < 0) {
+
             firstLock = from;
             secondLock = to;
+
         } else {
+
             firstLock = to;
             secondLock = from;
         }
-
         synchronized (firstLock) {
             synchronized (secondLock) {
-                from.withdraw(totalDebit);
-                to.deposit(amount);
+
+                executeTransfer(
+                        from,
+                        to,
+                        totalDebit,
+                        amount
+                );
             }
         }
-        transactionCounter++;
-        journal.add(new Transaction(
-                transactionCounter,
-                TransactionType.TRANSFER,
-                from.getNumber(),
-                to.getNumber(),
-                amount,
-                TransactionStatus.SUCCESS
-        ));
 
-        notificationService.notify("Transfer " + amount + " completed");
+        notificationService.notify(
+                "Transfer " + amount + " completed"
+        );
     }
 }

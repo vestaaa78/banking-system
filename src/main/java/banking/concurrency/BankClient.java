@@ -1,4 +1,3 @@
-
 package banking.concurrency;
 
 import banking.application.TransferService;
@@ -61,16 +60,12 @@ public class BankClient implements Runnable {
 
             } catch (RuntimeException exception) {
                 failedTransfers.incrementAndGet();
-
-                System.out.println(
-                        clientName + ": transfer failed: "
-                                + exception.getMessage()
-                );
             }
         }
 
         System.out.println(
-                clientName + " finished. Successful: "
+                clientName
+                        + " finished. Successful: "
                         + successfulTransfers.get()
                         + ", failed: "
                         + failedTransfers.get()

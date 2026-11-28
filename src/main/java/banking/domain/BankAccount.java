@@ -12,23 +12,12 @@ public abstract class BankAccount implements Identifiable<AccountNumber> {
         if (initialBalance < 0) {
             throw new IllegalArgumentException("Начальный баланс не может быть отрицательным");
         }
+
         this.number = number;
         this.owner = owner;
         this.balance = initialBalance;
     }
 
-    public synchronized double getBalance() {
-        return balance;
-    }
-
-    public void deposit(double amount) {
-        if (amount <= 0) {
-            throw new InvalidAmountException("Amount must be positive");
-        }
-        synchronized (this) {
-            increaseBalance(amount);
-        }
-    }
 
     public void withdraw(double amount) {
         if (amount <= 0) {
@@ -52,17 +41,35 @@ public abstract class BankAccount implements Identifiable<AccountNumber> {
         return owner;
     }
 
-    protected void increaseBalance(double amount) {
+
+    public synchronized void deposit(double amount) {
+        if (amount <= 0) {
+            throw new InvalidAmountException("Amount must be positive");
+        }
+
+        increaseBalance(amount);
+    }
+
+    public synchronized double getBalance() {
+        return balance;
+    }
+
+    protected synchronized void increaseBalance(double amount) {
         balance += amount;
     }
 
-    protected void decreaseBalance(double amount) {
+    protected synchronized void decreaseBalance(double amount) {
         balance -= amount;
     }
 
-    protected double getAvailableAmount() {
+    protected synchronized void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    protected synchronized double getAvailableAmount() {
         return balance;
     }
+
 
     @Override
     public AccountNumber getId() {
