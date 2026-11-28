@@ -14,8 +14,14 @@ public class BankClient implements Runnable {
     private final TransferService transferService;
     private final int operationsCount;
 
-    private final AtomicInteger successfulTransfers = new AtomicInteger(0);
-    private final AtomicInteger failedTransfers = new AtomicInteger(0);
+    private final AtomicInteger successfulTransfers =
+            new AtomicInteger(0);
+
+    private final AtomicInteger failedTransfers =
+            new AtomicInteger(0);
+
+    private final AtomicInteger totalAttempts =
+            new AtomicInteger(0);
 
     public BankClient(
             String clientName,
@@ -31,6 +37,7 @@ public class BankClient implements Runnable {
 
     @Override
     public void run() {
+
         Random random = new Random();
 
         for (int i = 0; i < operationsCount; i++) {
@@ -40,7 +47,10 @@ public class BankClient implements Runnable {
                 return;
             }
 
+            totalAttempts.incrementAndGet();
+
             try {
+
                 int fromIndex = random.nextInt(accounts.size());
 
                 int toIndex = random.nextInt(accounts.size());
@@ -59,7 +69,9 @@ public class BankClient implements Runnable {
                 successfulTransfers.incrementAndGet();
 
             } catch (RuntimeException exception) {
+
                 failedTransfers.incrementAndGet();
+
             }
         }
 
@@ -69,14 +81,18 @@ public class BankClient implements Runnable {
                         + successfulTransfers.get()
                         + ", failed: "
                         + failedTransfers.get()
+                        + ", attempts: "
+                        + totalAttempts.get()
         );
     }
 
     public int getSuccessfulTransfers() {
         return successfulTransfers.get();
     }
-
     public int getFailedTransfers() {
         return failedTransfers.get();
+    }
+    public int getTotalAttempts() {
+        return totalAttempts.get();
     }
 }
